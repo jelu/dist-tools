@@ -2,7 +2,7 @@
 
 if [ -z "$1" -o -z "$2" ]; then
 	echo usage ubuntu-bump-release old-release new-release
-	exit -1
+	exit 1
 fi
 
 old_rel="$1"
