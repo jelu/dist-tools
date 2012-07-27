@@ -2,7 +2,7 @@
 
 for what in lucid maverick natty oneiric precise; do
 	git checkout $what &&
-	sed -i "s%\\(liblim.*\\) (= 0.1-1)%\\1 (= 0.1-1~$what+1)%g" debian/control &&
+	sed -i "s%\\(liblim[^ ]*\\) (= 0.1-1)%\\1 (= 0.1-1~$what+1)%g" debian/control &&
 	git commit -a -m "Initial control for $what" &&
 	git push || break
 done &&
