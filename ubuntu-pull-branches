@@ -2,6 +2,6 @@
 
 for what in lucid maverick natty oneiric precise; do
 	git checkout -b $what origin/$what
-done
+done &&
 git checkout master
 
