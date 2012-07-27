@@ -1,7 +1,12 @@
 #!/bin/sh
 
 for what in lucid maverick natty oneiric precise; do
-	git checkout -b $what origin/$what
+	if git branch | grep -q $what; then
+		git checkout $what &&
+		git pull
+	else
+		git checkout -b $what origin/$what
+	fi || break
 done &&
 git checkout master
 
