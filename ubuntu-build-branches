@@ -1,0 +1,8 @@
+#!/bin/sh
+pgrep -u `id -u` 'gpg-agent' >/dev/null 2>/dev/null || gpg-agent --daemon
+
+for what in lucid maverick natty oneiric precise; do
+	git checkout $what &&
+	dpkg-buildpackage -S -i -I
+done
+git checkout master

@@ -1,0 +1,11 @@
+#!/bin/sh
+
+for what in lucid maverick natty oneiric precise; do
+	git checkout -b $what &&
+	sed -i "s%0.1-1%0.1-1~$what+1%" debian/changelog &&
+	sed -i "s%unstable;%$what;%" debian/changelog &&
+	git diff debian/changelog &&
+	git commit -a -m "Initial release for $what" &&
+	git push origin $what &&
+	git checkout master || break
+done

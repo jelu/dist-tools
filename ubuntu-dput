@@ -1,0 +1,5 @@
+#!/bin/sh
+
+for what in $@; do
+	dput ppa:jelu/lim $what
+done
