@@ -1,0 +1,18 @@
+#!/bin/sh
+
+if [ -z "$1" -o -z "$2" ]; then
+	echo usage ubuntu-bump-release old-release new-release
+	exit -1
+fi
+
+old_rel="$1"
+new_rel="$2"
+
+for what in lucid maverick natty oneiric precise; do
+	git checkout $what &&
+	sed -i "s%\\(liblim.*\\) (= 0.1-1~$what+$old_rel)%\\1 (= 0.1-1~$what+$new_rel)%g" debian/control &&
+	sed -i "s%0.1-1~$what+$old_rel%0.1-1~$what+$new_rel%" debian/changelog &&
+	git commit -a -m "Bump Ubuntu Release from $old_rel to $new_rel" &&
+	git push || break
+done &&
+git checkout master
