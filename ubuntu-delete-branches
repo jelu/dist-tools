@@ -1,0 +1,5 @@
+#!/bin/sh
+
+for what in lucid maverick natty oneiric precise; do
+	git branch -D $what || break
+done
