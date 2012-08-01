@@ -1,7 +1,0 @@
-#!/bin/sh
-
-for what in lucid maverick natty oneiric precise; do
-	git checkout $what &&
-	dpkg-buildpackage -S -i -I
-done &&
-git checkout master

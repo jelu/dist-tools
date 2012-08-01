@@ -1,8 +1,0 @@
-#!/bin/sh
-
-for what in lucid maverick natty oneiric precise; do
-	git checkout $what &&
-	git rebase master &&
-	git pull || break
-done &&
-git checkout master
