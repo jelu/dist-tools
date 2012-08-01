@@ -3,7 +3,6 @@
 for what in lucid maverick natty oneiric precise; do
 	git checkout $what &&
 	git rebase master &&
-	git pull &&
-	git push || break
+	git pull || break
 done &&
 git checkout master

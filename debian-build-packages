@@ -1,14 +1,17 @@
 #!/bin/sh
 
 echo "Signing dummy file"
-rm -f /tmp/dummy.$$*
-touch /tmp/dummy.$$
-gpg --sign /tmp/dummy.$$
+rm -f /tmp/dummy.$$* &&
+touch /tmp/dummy.$$ &&
+gpg --sign /tmp/dummy.$$ &&
+rm debian/changelog debian/control &&
+git checkout debian/changelog debian/control &&
+rm -f Makefile &&
 
 for what in squeeze; do
-	sed -i 's%~unstable%~squeeze%g' debian/changelog debian/control
-	dpkg-buildpackage -i -I
-	rm debian/changelog debian/control
-	git checkout debian/changelog debian/control
+	sed -i "s%~unstable%~$what%g" debian/changelog debian/control &&
+	dpkg-buildpackage -i -I &&
+	rm debian/changelog debian/control &&
+	git checkout debian/changelog debian/control || break
 done
 
