@@ -1,0 +1,14 @@
+#!/bin/sh
+
+echo "Signing dummy file"
+rm -f /tmp/dummy.$$* &&
+touch /tmp/dummy.$$ &&
+gpg --sign /tmp/dummy.$$ &&
+
+for what in lucid maverick natty oneiric precise; do
+	sed -i "s%~unstable%~$what%g" debian/changelog debian/control &&
+	dpkg-buildpackage -i -I &&
+	rm debian/changelog debian/control &&
+	git checkout debian/changelog debian/control || break
+done
+
