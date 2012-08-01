@@ -1,0 +1,24 @@
+#!/bin/sh
+
+if [ ! -f debian/changelog -o ! -f debian/control ]; then
+	echo "Not in the right directory, cant find debian files"
+	exit 1
+fi
+
+cur_vers=`head -n 1 debian/changelog | sed 's%.*(\([^)]*\)).*%\1%'`
+name=`head -n 1 debian/changelog | awk '{ print $1 }'`
+date=`date +"%a, %d %b %Y %T %z"`
+
+mv debian/changelog debian/changelog.new-entry &&
+echo "$name ($cur_vers) unstable; urgency=low
+
+  * .
+
+ -- Jerry Lundström <lundstrom.jerry@gmail.com>  $date
+" >> debian/changelog &&
+cat debian/changelog.new-entry >> debian/changelog &&
+rm debian/changelog.new-entry &&
+echo "ok" &&
+exit 0
+
+echo "failed!"
