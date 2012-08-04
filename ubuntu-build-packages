@@ -10,6 +10,7 @@ rm -f Makefile &&
 
 for what in lucid maverick natty oneiric precise; do
 	sed -i "s%~unstable%~$what%g" debian/changelog debian/control &&
+	sed -i "s%) unstable;%) $what;%g" debian/changelog &&
 	dpkg-buildpackage -i -I -S &&
 	rm debian/changelog debian/control &&
 	git checkout debian/changelog debian/control || break
