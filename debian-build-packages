@@ -1,5 +1,11 @@
 #!/bin/sh
 
+release=`lsb_release -c | awk '{print $2}'`
+if [ -z "$release" ]; then
+        echo "could not get release codename, exit"
+        exit 1
+fi
+
 echo "Signing dummy file"
 rm -f /tmp/dummy.$$* &&
 touch /tmp/dummy.$$ &&
@@ -8,10 +14,19 @@ rm debian/changelog debian/control &&
 git checkout debian/changelog debian/control &&
 rm -f Makefile &&
 
-for what in squeeze; do
+for what in $release; do
 	sed -i "s%~unstable%~$what%g" debian/changelog debian/control &&
 	dpkg-buildpackage -i -I &&
 	rm debian/changelog debian/control &&
 	git checkout debian/changelog debian/control || break
 done
 
+for what in squeeze wheezy sid; do
+	if [ "$release" = "$what" ]; then
+		continue
+	fi
+	sed -i "s%~unstable%~$what%g" debian/changelog debian/control &&
+	dpkg-buildpackage -d -i -I &&
+	rm debian/changelog debian/control &&
+	git checkout debian/changelog debian/control || break
+done
