@@ -1,0 +1,21 @@
+#!/bin/sh
+
+if [ ! -d epel ]; then
+	echo "no epel directory, exit"
+	exit 1
+fi
+
+basename=`basename $PWD`
+specfile=`(cd epel && ls -1 epel | head -n 1)`
+
+if [ ! -f "epel/$specfile" ]; then
+	echo "no specfile found, exit"
+	exit 1
+fi
+
+version=`grep '^Version:' epel/$specfile | awk '{print $2}'`
+
+cp -v epel/$specfile ~/rpmbuild/SPECS/ &&
+( cd .. && tar zcvf ~/rpmbuild/SOURCES/$basename-$version.tar.gz $basename ) &&
+rpmbuild -ba --sign -v ~/rpmbuild/SPECS/$specfile &&
+echo OK
