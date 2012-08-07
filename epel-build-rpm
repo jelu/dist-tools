@@ -6,7 +6,7 @@ if [ ! -d epel ]; then
 fi
 
 basename=`basename $PWD`
-specfile=`(cd epel && ls -1 epel | head -n 1)`
+specfile=`(cd epel && ls -1 *.spec | head -n 1)`
 
 if [ ! -f "epel/$specfile" ]; then
 	echo "no specfile found, exit"
