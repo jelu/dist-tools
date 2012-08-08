@@ -15,6 +15,9 @@ fi
 
 version=`grep '^Version:' epel/$specfile | head -n 1 | awk '{print $2}'`
 
+if [ -d epel/patches ]; then
+	cp -v epel/patches/*.patch ~/rpmbuild/SOURCES/ 2>/dev/null
+fi &&
 cp -v epel/$specfile ~/rpmbuild/SPECS/ &&
 ( cd .. && tar --exclude-vcs -zcvf ~/rpmbuild/SOURCES/$basename-$version.tar.gz $basename ) &&
 rpmbuild -ba --sign -v ~/rpmbuild/SPECS/$specfile &&
