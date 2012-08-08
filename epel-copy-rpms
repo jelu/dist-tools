@@ -10,7 +10,7 @@ shift
 for name in $@; do
 	echo "$name"
 	cp -v ~/rpmbuild/SRPMS/$name*.src.rpm $epel_base_dir/SRPMS || exit
-	for arch in i386 x86_64 ppc64; do
+	for arch in noarch; do
 		cp -v ~/rpmbuild/RPMS/noarch/$name*.rpm $epel_base_dir/$arch || exit
 	done
 done
