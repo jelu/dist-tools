@@ -6,6 +6,6 @@ if [ -z "$1" ]; then
 fi
 
 epel_base_dir="$1"
-for arch in SRPMS i386 x86_64 ppc64; do
+for arch in SRPMS noarch; do
 	createrepo --database --update $epel_base_dir/$arch || exit
 done
