@@ -1,5 +1,11 @@
 #!/bin/sh
 
+release=`lsb_release -c | awk '{print $2}'`
+if [ -z "$release" ]; then
+        echo "could not get release codename, exit"
+        exit 1
+fi
+
 echo "Signing dummy file"
 rm -f /tmp/dummy.$$* &&
 touch /tmp/dummy.$$ &&
@@ -13,7 +19,11 @@ fi &&
 for what in lucid maverick natty oneiric precise; do
 	sed -i "s%~unstable%~$what%g" debian/changelog debian/control &&
 	sed -i "s%) unstable;%) $what;%g" debian/changelog &&
-	dpkg-buildpackage -i -I -S &&
+	if [ "$what" = "$release" ]; then
+		dpkg-buildpackage -i -I
+	else
+		dpkg-buildpackage -i -I -S
+	fi &&
 	rm debian/changelog debian/control &&
 	git checkout debian/changelog debian/control || break
 done
