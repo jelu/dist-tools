@@ -1,5 +1,12 @@
 #!/bin/sh
 
+if [ -z "$1" ]; then
+	echo "usage: $0 <ppa name>"
+	exit 1
+fi
+
+ppa="$1"
+
 for what in $@; do
-	dput ppa:jelu/lim $what
+	dput "ppa:jelu/$ppa" $what
 done
