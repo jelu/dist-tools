@@ -21,9 +21,8 @@ for what in lucid maverick natty oneiric precise; do
 	sed -i "s%) unstable;%) $what;%g" debian/changelog &&
 	if [ "$what" = "$release" ]; then
 		dpkg-buildpackage -i -I
-	else
-		dpkg-buildpackage -i -I -S
 	fi &&
+	dpkg-buildpackage -i -I -S &&
 	rm debian/changelog debian/control &&
 	git checkout debian/changelog debian/control || break
 done
