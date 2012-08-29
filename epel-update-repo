@@ -1,0 +1,11 @@
+#!/bin/sh
+
+if [ -z "$1" ]; then
+	echo "usage: $0 <epel base directory>"
+	exit 1
+fi
+
+epel_base_dir="$1"
+for arch in SRPMS noarch; do
+	createrepo --database --update $epel_base_dir/$arch || exit
+done

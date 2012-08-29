@@ -1,0 +1,17 @@
+#!/bin/sh
+
+if [ ! -d "$1" ]; then
+	echo "usage: $0 <base directory with *.deb *.dsc>"
+	exit 1
+fi
+
+base_dir="$1"
+
+for what in squeeze wheezy sid; do
+	reprepro -Vb . includedeb $what $base_dir/*$what*.deb || exit 1
+	for dsc in $base_dir/*$what*.dsc; do
+		reprepro -Vb . includedsc $what $dsc || exit 1
+	done
+	reprepro -Vb . check $what &&
+	reprepro -Vb . export $what || break
+done
