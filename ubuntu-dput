@@ -6,6 +6,7 @@ if [ -z "$1" ]; then
 fi
 
 ppa="$1"
+shift
 
 for what in $@; do
 	dput "ppa:jelu/$ppa" $what
