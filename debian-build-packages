@@ -6,7 +6,9 @@ touch /tmp/dummy.$$ &&
 gpg --sign /tmp/dummy.$$ &&
 rm debian/changelog debian/control &&
 git checkout debian/changelog debian/control &&
-rm -f Makefile &&
+if [ -f Makefile.PL ]; then
+  rm -f Makefile
+fi &&
 
 for what in squeeze; do
 	sed -i "s%~unstable%~$what%g" debian/changelog debian/control &&
