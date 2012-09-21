@@ -15,6 +15,7 @@ git checkout debian/changelog debian/control &&
 if [ -f Makefile.PL ]; then
   rm -f Makefile
 fi &&
+rm -rf .pc &&
 
 for what in $release; do
 	sed -i "s%~unstable%~$what%g" debian/changelog debian/control &&
