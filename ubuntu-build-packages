@@ -16,7 +16,7 @@ if [ -f Makefile.PL ]; then
   rm -f Makefile
 fi &&
 
-for what in lucid maverick natty oneiric precise; do
+for what in lucid maverick natty oneiric precise quantal raring; do
 	sed -i "s%~unstable%~$what%g" debian/changelog debian/control &&
 	sed -i "s%) unstable;%) $what;%g" debian/changelog &&
 	if [ "$what" = "$release" ]; then
