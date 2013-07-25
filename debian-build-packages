@@ -6,10 +6,12 @@ if [ -z "$release" ]; then
         exit 1
 fi
 
-echo "Signing dummy file"
-rm -f /tmp/dummy.$$* &&
-touch /tmp/dummy.$$ &&
-gpg --sign /tmp/dummy.$$ &&
+if [ "$nosign" = "" ]; then
+  echo "Signing dummy file"
+  rm -f /tmp/dummy.$$* &&
+  touch /tmp/dummy.$$ &&
+  gpg --sign /tmp/dummy.$$
+fi &&
 rm debian/changelog debian/control &&
 git checkout debian/changelog debian/control &&
 if [ -f Makefile.PL ]; then
