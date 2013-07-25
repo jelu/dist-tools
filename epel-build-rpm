@@ -5,12 +5,17 @@ if [ ! -d epel ]; then
 	exit 1
 fi
 
+sign="--sign"
 basename=`basename $PWD`
 specfile=`(cd epel && ls -1 *.spec | head -n 1)`
 
 if [ ! -f "epel/$specfile" ]; then
 	echo "no specfile found, exit"
 	exit 1
+fi
+
+if [ "$nosign" != "" ]; then
+  sign=""
 fi
 
 version=`grep '^Version:' epel/$specfile | head -n 1 | awk '{print $2}'`
@@ -20,5 +25,5 @@ if [ -d epel/patches ]; then
 fi &&
 cp -v epel/$specfile ~/rpmbuild/SPECS/ &&
 ( cd .. && tar --exclude-vcs -zcvf ~/rpmbuild/SOURCES/$basename-$version.tar.gz $basename ) &&
-rpmbuild -ba --sign -v ~/rpmbuild/SPECS/$specfile &&
+rpmbuild -ba $sign -v ~/rpmbuild/SPECS/$specfile &&
 echo OK
