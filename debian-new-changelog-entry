@@ -7,7 +7,7 @@ fi
 
 cur_vers=`head -n 1 debian/changelog | sed 's%.*(\([^)]*\)).*%\1%'`
 name=`head -n 1 debian/changelog | awk '{ print $1 }'`
-date=`date +"%a, %d %b %Y %T %z"`
+date=`date -R +"%a, %d %b %Y %T %z"`
 
 mv debian/changelog debian/changelog.new-entry &&
 echo "$name ($cur_vers) unstable; urgency=low
