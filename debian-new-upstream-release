@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -e
 
 if [ -z "$1" ]; then
 	echo "usage: $0 <new version>"
@@ -20,21 +20,20 @@ cur_vers=`head -n 1 debian/changelog | sed 's%.*(\([^)]*\)).*%\1%'`
 name=`head -n 1 debian/changelog | awk '{ print $1 }'`
 date=`date -R`
 
-mv debian/changelog debian/changelog.new-upstream-release &&
+mv debian/changelog debian/changelog.new-upstream-release
 echo "$name ($new_vers-1) unstable; urgency=low
 
   * New upstream release v$new_vers.
 
  -- Jerry Lundström <lundstrom.jerry@gmail.com>  $date
-" >> debian/changelog &&
-cat debian/changelog.new-upstream-release >> debian/changelog &&
-rm debian/changelog.new-upstream-release &&
+" >> debian/changelog
+cat debian/changelog.new-upstream-release >> debian/changelog
+rm debian/changelog.new-upstream-release
+
 if [ -n "$darwin" ]; then
 	sed -i "" "s%\\(liblim[^ ]*\\) (= $cur_vers)%\\1 (= $new_vers-1)%g" debian/control
 else
 	sed -i "s%\\(liblim[^ ]*\\) (= $cur_vers)%\\1 (= $new_vers-1)%g" debian/control
-fi &&
-echo "ok" &&
-exit 0
+fi
 
-echo "failed!"
+echo "ok"

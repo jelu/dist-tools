@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -e
 
 if [ -z "$1" ]; then
 	echo "usage: $0 <ppa name>"
@@ -11,3 +11,5 @@ shift
 for what in $@; do
 	dput "ppa:jelu/$ppa" $what
 done
+
+echo "ok"
