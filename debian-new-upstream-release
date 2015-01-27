@@ -18,7 +18,7 @@ fi
 new_vers="$1"
 cur_vers=`head -n 1 debian/changelog | sed 's%.*(\([^)]*\)).*%\1%'`
 name=`head -n 1 debian/changelog | awk '{ print $1 }'`
-date=`date -R +"%a, %d %b %Y %T %z"`
+date=`date -R`
 
 mv debian/changelog debian/changelog.new-upstream-release &&
 echo "$name ($new_vers-1) unstable; urgency=low
