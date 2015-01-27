@@ -12,7 +12,6 @@ if [ -z "$id" ]; then
 	exit 1
 fi
 
-id=
 case "$id" in
 	debian | Debian )
 		releases="wheezy jessie sid"
