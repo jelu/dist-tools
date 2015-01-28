@@ -65,10 +65,6 @@ for what in $release; do
 done
 
 for what in $releases; do
-	if [ "$release" = "$what" ]; then
-		continue
-	fi
-
 	sed -i "s%~unstable%~$what%g" debian/changelog debian/control
 	sed -i "s%) unstable;%) $what;%g" debian/changelog
 
