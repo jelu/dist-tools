@@ -64,7 +64,7 @@ for what in $release; do
 	fi
 done
 
-for what in squeeze wheezy jessie sid; do
+for what in $releases; do
 	if [ "$release" = "$what" ]; then
 		continue
 	fi
