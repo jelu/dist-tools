@@ -1,5 +1,9 @@
 #!/bin/sh -e
 
+if [ -z "$KEY_ID" ]; then
+	KEY_ID="4F23A0260F19DAC5"
+fi
+
 release=`lsb_release -c | awk '{print $2}'`
 if [ -z "$release" ]; then
 	echo "could not get release codename, exit"
@@ -31,7 +35,7 @@ if [ "$nosign" = "" ]; then
 	echo "Signing dummy file"
 	rm -f /tmp/dummy.$$*
 	touch /tmp/dummy.$$
-	gpg --sign /tmp/dummy.$$
+	gpg --default-key $KEY_ID --sign /tmp/dummy.$$
 fi
 
 if [ -d .git ]; then
@@ -49,7 +53,7 @@ for what in $release; do
 	sed -i "s%~unstable%~$what%g" debian/changelog debian/control
 	sed -i "s%) unstable;%) $what;%g" debian/changelog
 	
-	dpkg-buildpackage -i -I
+	dpkg-buildpackage -i -I -k$KEY_ID
 
 	if [ -d .git ]; then
 		rm debian/changelog debian/control
@@ -70,10 +74,10 @@ for what in squeeze wheezy jessie sid; do
 
 	case "$id" in
 		debian )
-			dpkg-buildpackage -d -i -I
+			dpkg-buildpackage -d -i -I -k$KEY_ID
 			;;
 		ubuntu )
-			dpkg-buildpackage -i -I -S
+			dpkg-buildpackage -i -I -S -k$KEY_ID
 			;;
 		* )
 			exit 1
