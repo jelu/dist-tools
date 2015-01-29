@@ -1,0 +1,39 @@
+#!/bin/sh -e
+
+if [ -z "$KEY_ID" ]; then
+	KEY_ID="4F23A0260F19DAC5"
+fi
+
+for file in $@; do
+	case "$file" in
+		*_source.changes )
+			dist=$(grep '^Distribution: ' -- "$file" | awk '{print $2}')
+
+			if [ -z "$dist" ]; then
+				echo "No distribution found in $file"
+				exit 1
+			fi
+
+			file=$(basename -- "$file" _source.changes).dsc
+			if [ ! -r "$file" ]; then
+				echo "File $file does not exists"
+				exit 1
+			fi
+
+			for arch in i386 amd64; do
+				echo ""
+				echo ""
+				echo "Building $file for distribution $dist on $arch arch"
+				echo ""
+				cowbuilder-dist "$dist" "$arch" build "$file"
+			done
+			;;
+
+		* )
+			echo "Unknown file $file"
+			exit 1
+			;;
+	esac
+done
+
+echo "ok"
