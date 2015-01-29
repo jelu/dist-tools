@@ -30,6 +30,8 @@ rm -rf .pc
 
 if [ "$1" = "all" ]; then
 	dists="debian ubuntu"
+elif [ -n "$1" ]; then
+	dists="$1"
 else
 	dists="$id"
 fi
