@@ -1,0 +1,80 @@
+#!/bin/sh -e
+
+if [ -z "$KEY_ID" ]; then
+	KEY_ID="4F23A0260F19DAC5"
+fi
+
+id=`lsb_release -i | awk '{print $3}'`
+if [ -z "$id" ]; then
+	echo "could not get distribution id, exit"
+	exit 1
+fi
+
+if [ "$nosign" = "" ]; then
+	echo "Signing dummy file"
+	rm -f /tmp/dummy.$$*
+	touch /tmp/dummy.$$
+	gpg --default-key $KEY_ID --sign /tmp/dummy.$$
+fi
+
+if [ -d .git ]; then
+	rm debian/changelog debian/control
+	git checkout debian/changelog debian/control
+fi
+
+if [ -f Makefile.PL ]; then
+  rm -f Makefile
+fi
+
+rm -rf .pc
+
+if [ "$1" = "all" ]; then
+	dists="debian ubuntu"
+else
+	dists="$id"
+fi
+
+for id in $dists; do
+
+case "$id" in
+	debian | Debian )
+		releases="wheezy jessie sid"
+		id=debian
+		;;
+	ubuntu | Ubuntu )
+		releases="lucid precise trusty utopic vivid"
+		id=ubuntu
+		;;
+	* )
+		echo "Unknown distribution id $id"
+		exit 1
+		;;
+esac
+
+for what in $releases; do
+	sed -i "s%~unstable%~$what%g" debian/changelog debian/control
+	sed -i "s%) unstable;%) $what;%g" debian/changelog
+
+	case "$id" in
+		debian )
+			dpkg-buildpackage -i -I -S -k$KEY_ID
+			;;
+		ubuntu )
+			dpkg-buildpackage -i -I -S -k$KEY_ID
+			;;
+		* )
+			exit 1
+			;;
+	esac
+
+	if [ -d .git ]; then
+		rm debian/changelog debian/control
+		git checkout debian/changelog debian/control
+	else
+		sed -i "s%~$what%~unstable%g" debian/changelog debian/control
+		sed -i "s%) $what;%) unstable;%g" debian/changelog
+	fi
+done
+
+done
+echo "ok"
