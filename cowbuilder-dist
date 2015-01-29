@@ -25,7 +25,11 @@ for file in $@; do
 				echo ""
 				echo "Building $file for distribution $dist on $arch arch"
 				echo ""
-				cowbuilder-dist "$dist" "$arch" build "$file"
+				cowbuilder-dist "$dist" "$arch" build "$file" || {
+					echo ""
+					echo "FAILED build"
+					echo ""
+				}
 			done
 			;;
 
