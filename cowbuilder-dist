@@ -1,7 +1,40 @@
 #!/bin/sh -e
 
+dists="wheezy jessie sid"
+archs="i386 amd64"
+
 if [ -z "$KEY_ID" ]; then
 	KEY_ID="4F23A0260F19DAC5"
+fi
+
+if [ -z "$2" ]; then
+	case "$1" in
+		install )
+			sudo apt-get install -y ubuntu-dev-tools cowbuilder debhelper dput
+			exit 0
+			;;
+
+		create | update)
+			for dist in $dists; do
+				for arch in $archs; do
+					echo ""
+					echo ""
+					echo "*******************************************************************************"
+					echo "Doing $1 for distribution $dist arch $arch"
+					echo "*******************************************************************************"
+					echo ""
+					cowbuilder-dist "$dist" "$arch" "$1" || {
+						echo ""
+						echo "****************************************"
+						echo "             FAILED $1"
+						echo "****************************************"
+						echo ""
+					}
+				done
+			done
+			exit 0
+			;;
+	esac
 fi
 
 for file in $@; do
@@ -23,11 +56,15 @@ for file in $@; do
 			for arch in i386 amd64; do
 				echo ""
 				echo ""
+				echo "*******************************************************************************"
 				echo "Building $file for distribution $dist on $arch arch"
+				echo "*******************************************************************************"
 				echo ""
 				cowbuilder-dist "$dist" "$arch" build "$file" || {
 					echo ""
-					echo "FAILED build"
+					echo "****************************************"
+					echo "             FAILED build"
+					echo "****************************************"
 					echo ""
 				}
 			done
