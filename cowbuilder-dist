@@ -1,7 +1,12 @@
 #!/bin/sh -e
 
-dists="wheezy jessie sid"
-archs="i386 amd64"
+if [ -z "$dists" ]; then
+	dists="wheezy jessie sid"
+fi
+
+if [ -z "$archs" ]; then
+	archs="i386 amd64"
+fi
 
 if [ -z "$KEY_ID" ]; then
 	KEY_ID="4F23A0260F19DAC5"
