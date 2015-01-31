@@ -58,7 +58,7 @@ for file in $@; do
 				exit 1
 			fi
 
-			for arch in i386 amd64; do
+			for arch in $archs; do
 				echo ""
 				echo ""
 				echo "*******************************************************************************"
