@@ -58,7 +58,19 @@ for file in $@; do
 				exit 1
 			fi
 
-			for arch in $archs; do
+			tarch=$(grep '^Architecture: ' -- "$file" | awk '{print $2}')
+			tarchs="$archs"
+			case "$tarch" in
+				all )
+					tarchs="amd64"
+					;;
+				any )
+					;;
+				* )
+					tarchs="$tarch"
+					;;
+			esac
+			for arch in $tarchs; do
 				echo ""
 				echo ""
 				echo "*******************************************************************************"
