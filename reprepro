@@ -1,0 +1,17 @@
+#!/bin/sh -e
+if [ -z "$2" ]; then
+  echo "usage: reprepro <base> <pattern>"
+  exit 1
+fi
+for dist in jessie sid wheezy; do
+  for dir in ${dist}*_result; do
+    files=`find "$dir" -type f -name "${2}changes"`
+    if [ -n "$files" ]; then
+      for file in $files; do
+        reprepro -Vb "$1" include "$dist" "$file"
+      done
+    fi
+  done
+  reprepro -Vb "$1" check "$dist"
+  reprepro -Vb "$1" export "$dist"
+done

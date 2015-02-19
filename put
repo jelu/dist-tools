@@ -1,0 +1,14 @@
+#!/bin/sh -e
+if [ -z "$1" ]; then
+  echo "usage: put <pattern>"
+  exit 1
+fi
+for dist in jessie sid wheezy; do
+  for dir in ${dist}*_result; do
+    files=`find "$dir" -type f -name "${1}deb"`
+    if [ -n "$files" ]; then
+      cp -v -- $files local/"$dist"/
+      (cd -- local/"$dist" && apt-ftparchive packages . >Packages)
+    fi
+  done
+done
