@@ -57,6 +57,17 @@ for what in $releases; do
 	sed -i "s%~unstable%~$what%g" debian/changelog debian/control
 	sed -i "s%) unstable;%) $what;%g" debian/changelog
 
+    if [ -r debian/source/format ]; then
+        if grep -q quilt debian/source/format; then
+            cur_vers=`head -n 1 debian/changelog | sed 's%.*(\([^)]*\)).*%\1%' | sed 's%-[0-9]*$%%'`
+            name=`head -n 1 debian/changelog | awk '{ print $1 }'`
+
+            if [ -d .git ]; then
+                git archive --format=tar "--prefix=${name}_${cur_vers}/" `git branch | awk '{print $2}'` | gzip >"../${name}_${cur_vers}.orig.tar.gz"
+            fi
+        fi
+    fi
+
 	case "$id" in
 		debian )
 			dpkg-buildpackage -i -I -S -k$KEY_ID
