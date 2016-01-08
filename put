@@ -3,7 +3,7 @@ if [ -z "$1" ]; then
   echo "usage: put <pattern>"
   exit 1
 fi
-for dist in jessie sid stretch; do
+for dist in jessie; do
   for dir in ${dist}*_result; do
     files=`find "$dir" -type f -name "${1}deb"`
     if [ -n "$files" ]; then
