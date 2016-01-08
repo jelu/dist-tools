@@ -79,7 +79,7 @@ for file in $@; do
 				exit 1
 			fi
 
-			tarch=$(grep '^Architecture: ' -- "$file" | awk '{print $2}')
+			tarch=$(grep '^Architecture: ' -- "$file" | cut -d ' ' -f 2-)
 			tarchs="$archs"
 			case "$tarch" in
 				all )
