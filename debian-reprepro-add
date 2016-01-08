@@ -7,7 +7,7 @@ fi
 
 base_dir="$1"
 
-for what in squeeze stretch jessie sid; do
+for what in jessie; do
 	reprepro -Vb . includedeb $what $base_dir/*$what*.deb
 	for dsc in $base_dir/*$what*.dsc; do
 		reprepro -Vb . includedsc $what $dsc

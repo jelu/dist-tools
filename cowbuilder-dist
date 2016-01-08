@@ -1,7 +1,7 @@
 #!/bin/sh -e
 
 if [ -z "$dists" ]; then
-	dists="jessie stretch sid"
+	dists="jessie"
 fi
 
 if [ -z "$archs" ]; then
@@ -32,6 +32,10 @@ for dist in $dists; do
 done
 EOF
             chmod +x ~/pbuilder/local/update
+            cat >~/.pbuilderrc <<EOF
+HOOKDIR="/home/$USER/pbuilder/hooks"
+BINDMOUNTS="/home/$USER/pbuilder/local"
+EOF
 			exit 0
 			;;
 
@@ -44,6 +48,7 @@ EOF
 					echo "Doing $1 for distribution $dist arch $arch"
 					echo "*******************************************************************************"
 					echo ""
+					mkdir -p /home/$USER/pbuilder/local/"$dist"
 					cowbuilder-dist "$dist" "$arch" "$1" || {
 						echo ""
 						echo "****************************************"
@@ -93,6 +98,7 @@ for file in $@; do
 				echo "Building $file for distribution $dist on $arch arch"
 				echo "*******************************************************************************"
 				echo ""
+				mkdir -p /home/$USER/pbuilder/local/"$dist"
 				cowbuilder-dist "$dist" "$arch" build "$file" || {
 					echo ""
 					echo "****************************************"
