@@ -19,8 +19,8 @@ if [ -z "$2" ]; then
 			mkdir -p ~/pbuilder/hooks ~/pbuilder/local
 			cat >~/pbuilder/hooks/D05local <<EOF
 #!/bin/sh -e
-if [ -f "/home/prox/pbuilder/local/\$DIST/Packages" ]; then
-  echo "deb [trusted=yes] file:///home/prox/pbuilder/local/\$DIST ./" | tee /etc/apt/sources.list.d/local.list
+if [ -f "/home/$USER/pbuilder/local/\$DIST/Packages" ]; then
+  echo "deb [trusted=yes] file:///home/$USER/pbuilder/local/\$DIST ./" | tee /etc/apt/sources.list.d/local.list
   apt-get update -o Dir::Etc::sourcelist="sources.list.d/local.list" -o Dir::Etc::sourceparts="-" -o APT::Get::List-Cleanup="0"
 fi
 EOF
