@@ -7,6 +7,7 @@ for dist in jessie sid stretch; do
   for dir in ${dist}*_result; do
     files=`find "$dir" -type f -name "${1}deb"`
     if [ -n "$files" ]; then
+      mkdir -p local/"$dist"
       cp -v -- $files local/"$dist"/
       (cd -- local/"$dist" && apt-ftparchive packages . >Packages)
     fi
