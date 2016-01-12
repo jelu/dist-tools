@@ -18,7 +18,7 @@ fi
 
 case "$id" in
 	debian | Debian )
-		releases="jessie"
+		releases="jessie stretch sid"
 		id=debian
 		;;
 	ubuntu | Ubuntu )

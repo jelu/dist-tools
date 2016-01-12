@@ -1,6 +1,6 @@
 #!/bin/sh -e
 
-for what in jessie; do
+for what in jessie stretch sid; do
 	reprepro -Vb . check $what
 	reprepro -Vb . export $what
 done

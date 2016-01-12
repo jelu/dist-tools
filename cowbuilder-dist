@@ -1,7 +1,7 @@
 #!/bin/sh -e
 
 if [ -z "$dists" ]; then
-	dists="jessie"
+	dists="jessie stretch sid"
 fi
 
 if [ -z "$archs" ]; then
@@ -36,6 +36,7 @@ EOF
 HOOKDIR="/home/$USER/pbuilder/hooks"
 BINDMOUNTS="/home/$USER/pbuilder/local"
 EOF
+            test -f /usr/share/debootstrap/scripts/stretch || ( cd /usr/share/debootstrap/scripts && sudo ln -s sid stretch )
 			exit 0
 			;;
 

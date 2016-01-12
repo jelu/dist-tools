@@ -3,7 +3,7 @@ if [ -z "$2" ]; then
   echo "usage: reprepro <base> <pattern>"
   exit 1
 fi
-for dist in jessie; do
+for dist in jessie stretch sid; do
   for dir in ${dist}*_result; do
     files=`find "$dir" -type f -name "${2}changes"`
     if [ -n "$files" ]; then
