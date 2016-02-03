@@ -1,0 +1,39 @@
+#!/bin/sh -e
+
+if [ -z "$dists" ]; then
+	dists="debian:jessie debian:stretch debian:sid"
+fi
+
+if [ -z "$archs" ]; then
+	archs="i386 amd64"
+fi
+
+if [ -z "$KEY_ID" ]; then
+	KEY_ID="4F23A0260F19DAC5"
+fi
+
+if [ -z "$2" ]; then
+	case "$1" in
+		create | update)
+			for dist in $dists; do
+			    docker pull "$dist"
+# debhelper devscripts wget curl software-properties-common equivs
+			done
+			exit 0
+			;;
+	esac
+fi
+
+for file in $@; do
+	case "$file" in
+		*_source.changes )
+			;;
+
+		* )
+			echo "Unknown file $file"
+			exit 1
+			;;
+	esac
+done
+
+echo "OK"
