@@ -37,3 +37,12 @@ for file in $@; do
 done
 
 echo "OK"
+
+##!/bin/sh
+#   rpath=`pwd`
+#   dchroot -c i386 "cd $rpath && linux32 dpkg-buildpackage -ai386 $@"
+# Save it under /usr/local/bin/ia32-dpkg-buildpackage, make it executable and change the chroot name
+# according to your environment.
+# You will need to have your home directory available under the chroot.
+# Now you can build i386 packages using ia32-dpkg-buildpackage like dpkg-buildpackage. for example:
+#   $ ia32-dpkg-buildpackage -rfakeroot
