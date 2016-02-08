@@ -1,39 +1,51 @@
 #!/bin/sh -e
 
+base=`dirname $0`
+
 if [ -z "$dists" ]; then
-	dists="debian:jessie debian:stretch debian:sid"
+    dists="debian/jessie debian/stretch debian/sid \
+    ubuntu/precise ubuntu/trusty ubuntu/vivid ubuntu/wily ubuntu/xenial \
+    centos/5 centos/6 centos/7"
 fi
 
 if [ -z "$archs" ]; then
-	archs="i386 amd64"
+    archs="i386 amd64"
 fi
 
 if [ -z "$KEY_ID" ]; then
-	KEY_ID="4F23A0260F19DAC5"
+    KEY_ID="4F23A0260F19DAC5"
 fi
 
 if [ -z "$2" ]; then
-	case "$1" in
-		create | update)
-			for dist in $dists; do
-			    docker pull "$dist"
-# debhelper devscripts wget curl software-properties-common equivs
-			done
-			exit 0
-			;;
-	esac
+    case "$1" in
+        create )
+            for dist in $dists; do
+                if [ ! -f "$base/docker/$dist/Dockerfile" ]; then
+                    echo "Unknown dist $dist"
+                    exit 1
+                fi
+
+                (
+                    echo "== building $dist"
+                    cd "$base/docker/$dist"
+                    docker build -t "$dist:build" .
+                )
+            done
+            exit 0
+            ;;
+    esac
 fi
 
 for file in $@; do
-	case "$file" in
-		*_source.changes )
-			;;
+    case "$file" in
+        *_source.changes )
+            ;;
 
-		* )
-			echo "Unknown file $file"
-			exit 1
-			;;
-	esac
+        * )
+            echo "Unknown file $file"
+            exit 1
+            ;;
+    esac
 done
 
 echo "OK"
