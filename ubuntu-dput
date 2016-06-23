@@ -8,8 +8,12 @@ fi
 ppa="$1"
 shift
 
+if ! echo "$ppa" | grep -q '^ppa:'; then
+    ppa="ppa:jelu/$ppa"
+fi
+
 for what in $@; do
-	dput "ppa:jelu/$ppa" $what
+	dput "$ppa" $what
 done
 
 echo "ok"
