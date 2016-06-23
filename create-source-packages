@@ -79,6 +79,9 @@ for what in $releases; do
                 fi
 
                 if [ -f "../${name}_${cur_vers}.orig.tar" ]; then
+                    tar --delete -f "../${name}_${cur_vers}.orig.tar" \
+                        "${name}_${cur_vers}/.gitignore" \
+                        "${name}_${cur_vers}/.gitmodules"
                     ( cd .. && gzip "${name}_${cur_vers}.orig.tar" )
                 fi
             fi
