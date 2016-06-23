@@ -59,11 +59,28 @@ for what in $releases; do
 
     if [ -r debian/source/format ]; then
         if grep -q quilt debian/source/format; then
-            cur_vers=`head -n 1 debian/changelog | sed 's%.*(\([^)]*\)).*%\1%' | sed 's%-[0-9]*$%%'`
+            cur_vers=`head -n 1 debian/changelog | sed 's%.*(\([^)]*\)).*%\1%' | sed 's%-[0-9]*.*$%%'`
             name=`head -n 1 debian/changelog | awk '{ print $1 }'`
 
-            if [ -d .git ]; then
-                git archive --format=tar "--prefix=${name}_${cur_vers}/" `git branch | awk '{print $2}'` | gzip >"../${name}_${cur_vers}.orig.tar.gz"
+            if [ ! -f "../${name}_${cur_vers}.orig.tar.gz" ]; then
+                if [ -d .git ]; then
+                    git archive --format=tar "--prefix=${name}_${cur_vers}/" `git branch | awk '{print $2}'` \
+                        >"../${name}_${cur_vers}.orig.tar"
+                    git submodule status --recursive | while read hash path rest; do
+                        ( cd "$path" &&
+                            git archive \
+                                --format=tar "--prefix=${name}_${cur_vers}/$path/" \
+                                `git branch | grep '^\*' | sed -e 's%\* %%' | sed -e 's%(detached from \(.*\))%\1%'` \
+                            ) \
+                            >"../${name}_${cur_vers}.orig.tar-submodule"
+                    done
+                    tar Af "../${name}_${cur_vers}.orig.tar" "../${name}_${cur_vers}.orig.tar-submodule"
+                    rm "../${name}_${cur_vers}.orig.tar-submodule"
+                fi
+
+                if [ -f "../${name}_${cur_vers}.orig.tar" ]; then
+                    ( cd .. && gzip "${name}_${cur_vers}.orig.tar" )
+                fi
             fi
         fi
     fi
