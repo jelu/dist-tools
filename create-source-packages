@@ -74,14 +74,17 @@ for what in $releases; do
                             ) \
                             >"../${name}_${cur_vers}.orig.tar-submodule"
                     done
-                    tar Af "../${name}_${cur_vers}.orig.tar" "../${name}_${cur_vers}.orig.tar-submodule"
-                    rm "../${name}_${cur_vers}.orig.tar-submodule"
+                    if [ -f "../${name}_${cur_vers}.orig.tar-submodule" ]; then
+                        tar Af "../${name}_${cur_vers}.orig.tar" "../${name}_${cur_vers}.orig.tar-submodule"
+                        rm "../${name}_${cur_vers}.orig.tar-submodule"
+                        tar --delete -f "../${name}_${cur_vers}.orig.tar" \
+                            "${name}_${cur_vers}/.gitmodules"
+                    fi
                 fi
 
                 if [ -f "../${name}_${cur_vers}.orig.tar" ]; then
                     tar --delete -f "../${name}_${cur_vers}.orig.tar" \
-                        "${name}_${cur_vers}/.gitignore" \
-                        "${name}_${cur_vers}/.gitmodules"
+                        "${name}_${cur_vers}/.gitignore"
                     ( cd .. && gzip "${name}_${cur_vers}.orig.tar" )
                 fi
             fi
