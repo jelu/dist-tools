@@ -19,8 +19,8 @@ if [ -z "$2" ]; then
 			mkdir -p ~/pbuilder/hooks ~/pbuilder/local
 			cat >~/pbuilder/hooks/D05local <<EOF
 #!/bin/sh -e
-if [ -f "/home/$USER/pbuilder/local/\$DIST/Packages" ]; then
-  echo "deb [trusted=yes] file:///home/$USER/pbuilder/local/\$DIST ./" | tee /etc/apt/sources.list.d/local.list
+if [ -f "$HOME/pbuilder/local/\$DIST/Packages" ]; then
+  echo "deb [trusted=yes] file:///$HOME/pbuilder/local/\$DIST ./" | tee /etc/apt/sources.list.d/local.list
   apt-get update -o Dir::Etc::sourcelist="sources.list.d/local.list" -o Dir::Etc::sourceparts="-" -o APT::Get::List-Cleanup="0"
 fi
 EOF
@@ -33,8 +33,8 @@ done
 EOF
             chmod +x ~/pbuilder/local/update
             cat >~/.pbuilderrc <<EOF
-HOOKDIR="/home/$USER/pbuilder/hooks"
-BINDMOUNTS="/home/$USER/pbuilder/local"
+HOOKDIR="$HOME/pbuilder/hooks"
+BINDMOUNTS="$HOME/pbuilder/local"
 EOF
             test -f /usr/share/debootstrap/scripts/stretch || ( cd /usr/share/debootstrap/scripts && sudo ln -s sid stretch )
 			exit 0
@@ -49,13 +49,14 @@ EOF
 					echo "Doing $1 for distribution $dist arch $arch"
 					echo "*******************************************************************************"
 					echo ""
-					mkdir -p /home/$USER/pbuilder/local/"$dist"
+					mkdir -p "$HOME/pbuilder/local/$dist"
 					cowbuilder-dist "$dist" "$arch" "$1" || {
 						echo ""
 						echo "****************************************"
 						echo "             FAILED $1"
 						echo "****************************************"
 						echo ""
+						exit 2
 					}
 				done
 			done
@@ -99,13 +100,14 @@ for file in $@; do
 				echo "Building $file for distribution $dist on $arch arch"
 				echo "*******************************************************************************"
 				echo ""
-				mkdir -p /home/$USER/pbuilder/local/"$dist"
+				mkdir -p "$HOME/pbuilder/local/$dist"
 				cowbuilder-dist "$dist" "$arch" build "$file" || {
 					echo ""
 					echo "****************************************"
 					echo "             FAILED build"
 					echo "****************************************"
 					echo ""
+					exit 2
 				}
 			done
 			;;
