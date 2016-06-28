@@ -3,6 +3,8 @@
 test -f "$HOME/autobuild.pid" && exit 0
 echo $$ >"$HOME/autobuild.pid" 2>/dev/null || exit 0
 
+mkdir -p "$HOME/deb" "$HOME/build"
+
 find "$HOME/deb" -type f -name '*_source.changes' |
   while read file; do
     test -f "$file.built" && continue
@@ -13,6 +15,7 @@ find "$HOME/deb" -type f -name '*_source.changes' |
     (
       cp -v "$HOME/deb/$name"* "$HOME/deb/$orig.orig."* "$HOME/build" &&
       ( cd "$HOME/build" && "$HOME/dist-tools/cowbuilder-dist" "${name}_source.changes" ) &&
+      mkdir -p "$HOME/deb/result" &&
       cp -nv "$HOME/pbuilder/"*"_result/$name"* \
         "$HOME/pbuilder/"*"_result/$pkg-dbgsym_$vers-"* \
         "$HOME/deb/result/" &&
