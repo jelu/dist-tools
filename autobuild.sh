@@ -20,13 +20,11 @@ find "$HOME/deb" -type f -name '*_source.changes' |
       cp -v "$HOME/deb/$orig.orig."* "$HOME/build/"
       cp -v "$HOME/deb/$name"* "$HOME/build/" &&
       ( cd "$HOME/build" && "$HOME/dist-tools/cowbuilder-dist" "${name}_source.changes" ) &&
-      cp -nv "$HOME/pbuilder/"*"_result/$name"* \
+      cp -nv "$HOME/pbuilder/"*"_result/"* \
         "$HOME/deb/result/" &&
       touch "$file.built" ||
       touch "$file.build-err"
-      cp -nv "$HOME/pbuilder/"*"_result/$pkg-dbgsym_$vers-"* \
-        "$HOME/deb/result/"
-      cp -nv "$HOME/pbuilder/${dist}_result/$pkg"*.deb \
+      cp -nv "$HOME/pbuilder/${dist}_result/"*.deb \
         "$HOME/pbuilder/local/$dist" &&
       ( cd "$HOME/pbuilder/local/$dist" && apt-ftparchive packages . >Packages )
     ) >"$HOME/deb/$name.log" 2>&1
