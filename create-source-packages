@@ -73,10 +73,16 @@ for what in $releases; do
                                 `git branch | grep '^\*' | sed -e 's%\* %%' | sed -e 's%(detached from \(.*\))%\1%'` \
                             ) \
                             >"../${name}_${cur_vers}.orig.tar-submodule"
+                        if [ -f "../${name}_${cur_vers}.orig.tar-submodules" ]; then
+                            tar Af "../${name}_${cur_vers}.orig.tar-submodules" "../${name}_${cur_vers}.orig.tar-submodule"
+                            rm "../${name}_${cur_vers}.orig.tar-submodule"
+                        else
+                            mv "../${name}_${cur_vers}.orig.tar-submodule" "../${name}_${cur_vers}.orig.tar-submodules"
+                        fi
                     done
-                    if [ -f "../${name}_${cur_vers}.orig.tar-submodule" ]; then
-                        tar Af "../${name}_${cur_vers}.orig.tar" "../${name}_${cur_vers}.orig.tar-submodule"
-                        rm "../${name}_${cur_vers}.orig.tar-submodule"
+                    if [ -f "../${name}_${cur_vers}.orig.tar-submodules" ]; then
+                        tar Af "../${name}_${cur_vers}.orig.tar" "../${name}_${cur_vers}.orig.tar-submodules"
+                        rm "../${name}_${cur_vers}.orig.tar-submodules"
                         tar --delete -f "../${name}_${cur_vers}.orig.tar" \
                             "${name}_${cur_vers}/.gitmodules"
                     fi
