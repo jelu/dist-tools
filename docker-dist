@@ -58,3 +58,8 @@ echo "OK"
 # You will need to have your home directory available under the chroot.
 # Now you can build i386 packages using ia32-dpkg-buildpackage like dpkg-buildpackage. for example:
 #   $ ia32-dpkg-buildpackage -rfakeroot
+
+# RPM
+#  rpmdev-setuptree
+#  yum-builddep -y spec
+#  rpmbuild -ba spec

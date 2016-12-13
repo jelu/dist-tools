@@ -29,7 +29,7 @@ fi
 rm -rf .pc
 
 if [ "$1" = "all" ]; then
-	dists="debian ubuntu"
+	dists="debian ubuntu rpm"
 elif [ -n "$1" ]; then
 	dists="$1"
 else
@@ -47,6 +47,9 @@ case "$id" in
 		releases="precise trusty xenial yakkety"
 		id=ubuntu
 		;;
+	rpm )
+	    releases="all"
+	    ;;
 	* )
 		echo "Unknown distribution id $id"
 		exit 1
@@ -54,8 +57,12 @@ case "$id" in
 esac
 
 for what in $releases; do
-	sed -i "s%~unstable%~$what%g" debian/changelog debian/control
-	sed -i "s%) unstable;%) $what;%g" debian/changelog
+	case "$id" in
+		debian | ubuntu )
+	        sed -i "s%~unstable%~$what%g" debian/changelog debian/control
+	        sed -i "s%) unstable;%) $what;%g" debian/changelog
+	        ;;
+	esac
 
     if [ -r debian/source/format ]; then
         if grep -q quilt debian/source/format; then
@@ -104,18 +111,62 @@ for what in $releases; do
 		ubuntu )
 			dpkg-buildpackage -i -I -S -k$KEY_ID
 			;;
+	    rpm )
+            cur_vers="`grep ^Version: rpm/spec | awk '{print $2}'`-`grep ^Release: rpm/spec | awk '{print $2}' | sed 's/%.*//'`"
+            name=`grep ^Name: rpm/spec | awk '{print $2}'`
+
+            if [ ! -f "../${name}_${cur_vers}.rpm.tar.gz" ]; then
+                if [ -d .git ]; then
+                    git archive --format=tar "--prefix=${name}_${cur_vers}/" `git branch | awk '{print $2}'` \
+                        >"../${name}_${cur_vers}.rpm.tar"
+                    git submodule status --recursive | while read hash path rest; do
+                        ( cd "$path" &&
+                            git archive \
+                                --format=tar "--prefix=${name}_${cur_vers}/$path/" \
+                                `git branch | grep '^\*' | sed -e 's%\* %%' | sed -e 's%(detached from \(.*\))%\1%'` \
+                            ) \
+                            >"../${name}_${cur_vers}.rpm.tar-submodule"
+                        if [ -f "../${name}_${cur_vers}.rpm.tar-submodules" ]; then
+                            tar Af "../${name}_${cur_vers}.rpm.tar-submodules" "../${name}_${cur_vers}.rpm.tar-submodule"
+                            rm "../${name}_${cur_vers}.rpm.tar-submodule"
+                        else
+                            mv "../${name}_${cur_vers}.rpm.tar-submodule" "../${name}_${cur_vers}.rpm.tar-submodules"
+                        fi
+                    done
+                    if [ -f "../${name}_${cur_vers}.rpm.tar-submodules" ]; then
+                        tar Af "../${name}_${cur_vers}.rpm.tar" "../${name}_${cur_vers}.rpm.tar-submodules"
+                        rm "../${name}_${cur_vers}.rpm.tar-submodules"
+                        tar --delete -f "../${name}_${cur_vers}.rpm.tar" \
+                            "${name}_${cur_vers}/.gitmodules"
+                    fi
+                fi
+
+                if [ -f "../${name}_${cur_vers}.rpm.tar" ]; then
+                    tar --delete -f "../${name}_${cur_vers}.rpm.tar" \
+                        "${name}_${cur_vers}/.gitignore"
+                    ( cd .. && gzip "${name}_${cur_vers}.rpm.tar" )
+                fi
+            fi
+            if [ ! -f "../${name}_${cur_vers}.rpm.spec" ]; then
+                cp rpm/spec "../${name}_${cur_vers}.rpm.spec"
+            fi
+            ;;
 		* )
 			exit 1
 			;;
 	esac
 
-	if [ -d .git ]; then
-		rm debian/changelog debian/control
-		git checkout debian/changelog debian/control
-	else
-		sed -i "s%~$what%~unstable%g" debian/changelog debian/control
-		sed -i "s%) $what;%) unstable;%g" debian/changelog
-	fi
+	case "$id" in
+		debian | ubuntu )
+	        if [ -d .git ]; then
+		        rm debian/changelog debian/control
+		        git checkout debian/changelog debian/control
+	        else
+		        sed -i "s%~$what%~unstable%g" debian/changelog debian/control
+		        sed -i "s%) $what;%) unstable;%g" debian/changelog
+	        fi
+	        ;;
+	esac
 done
 
 done
