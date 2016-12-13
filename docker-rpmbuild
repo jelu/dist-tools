@@ -1,0 +1,40 @@
+#!/bin/sh -e
+
+if [ -z "$dists" ]; then
+    dists="centos-6 centos-7"
+fi
+
+tar="$1"
+spec="$2"
+resultdir="$3"
+
+if [ ! -r "$tar" -o ! -r "$spec" ]; then
+    echo "usage: docker-rpmbuild <tar> <spec> [<result dir>]"
+    exit 1
+fi
+
+tarname=`basename $tar`
+specname=`basename $spec`
+
+if ! echo "$tar" | grep -q ^/; then
+    tar="`pwd`/$tar"
+fi
+if ! echo "$spec" | grep -q ^/; then
+    spec="`pwd`/$spec"
+fi
+
+for dist in $dists; do
+    docker run -it \
+        --name rpmbuild \
+        -v "$tar:/root/$tarname:ro" \
+        -v "$spec:/root/$specname:ro" \
+        $dist \
+        bash -c "cd && cp -v $tarname rpmbuild/SOURCES/ && cp -v $specname rpmbuild/SPECS/ && yum-builddep -y rpmbuild/SPECS/$specname && rpmbuild -ba rpmbuild/SPECS/$specname"
+    if [ -d "$resultdir" ]; then
+        docker cp rpmbuild:/root/rpmbuild/RPMS "$resultdir"
+        docker cp rpmbuild:/root/rpmbuild/SRPMS "$resultdir"
+    fi
+    docker rm rpmbuild
+done
+
+echo "OK"
