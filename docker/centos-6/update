@@ -1,0 +1,15 @@
+#!/bin/sh -e
+
+base=`dirname $0`
+image=`( cd "$base" && cat NAME )`
+update=`echo "$image" | sed 's%:%-%g'`
+
+docker run \
+  -t \
+  --name "$update" \
+  "$image" \
+  bash -c 'yum -y update && yum -y clean all'
+
+docker commit "$update" "$image"
+
+docker rm "$update"
