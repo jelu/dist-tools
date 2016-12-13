@@ -8,7 +8,7 @@ docker run \
   -t \
   --name "$update" \
   "$image" \
-  bash -c 'yum -y update && yum -y clean all'
+  bash -c 'yum -y update'
 
 docker commit "$update" "$image"
 
