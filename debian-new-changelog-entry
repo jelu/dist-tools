@@ -1,8 +1,8 @@
 #!/bin/sh -e
 
 if [ ! -f debian/changelog -o ! -f debian/control ]; then
-	echo "Not in the right directory, cant find debian files"
-	exit 1
+    echo "Not in the right directory, cant find debian files"
+    exit 1
 fi
 
 cur_vers=`head -n 1 debian/changelog | sed 's%.*(\([^)]*\)).*%\1%'`

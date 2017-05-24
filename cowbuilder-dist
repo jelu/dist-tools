@@ -1,23 +1,23 @@
 #!/bin/sh -e
 
 if [ -z "$dists" ]; then
-	dists="jessie stretch sid"
+    dists="jessie stretch sid"
 fi
 
 if [ -z "$archs" ]; then
-	archs="i386 amd64"
+    archs="i386 amd64"
 fi
 
 if [ -z "$KEY_ID" ]; then
-	KEY_ID="4F23A0260F19DAC5"
+    KEY_ID="4F23A0260F19DAC5"
 fi
 
 if [ -z "$2" ]; then
-	case "$1" in
-		install )
-			sudo apt-get install -y ubuntu-dev-tools cowbuilder debhelper dput
-			mkdir -p ~/pbuilder/hooks ~/pbuilder/local
-			cat >~/pbuilder/hooks/D05local <<EOF
+    case "$1" in
+        install )
+            sudo apt-get install -y ubuntu-dev-tools cowbuilder debhelper dput
+            mkdir -p ~/pbuilder/hooks ~/pbuilder/local
+            cat >~/pbuilder/hooks/D05local <<EOF
 #!/bin/sh -e
 if [ -f "$HOME/pbuilder/local/\$DIST/Packages" ]; then
   echo "deb [trusted=yes] file:///$HOME/pbuilder/local/\$DIST ./" | tee /etc/apt/sources.list.d/local.list
@@ -37,86 +37,86 @@ HOOKDIR="$HOME/pbuilder/hooks"
 BINDMOUNTS="$HOME/pbuilder/local"
 EOF
             test -f /usr/share/debootstrap/scripts/stretch || ( cd /usr/share/debootstrap/scripts && sudo ln -s sid stretch )
-			exit 0
-			;;
+            exit 0
+            ;;
 
-		create | update)
-			for dist in $dists; do
-				for arch in $archs; do
-					echo ""
-					echo ""
-					echo "*******************************************************************************"
-					echo "Doing $1 for distribution $dist arch $arch"
-					echo "*******************************************************************************"
-					echo ""
-					mkdir -p "$HOME/pbuilder/local/$dist"
-					cowbuilder-dist "$dist" "$arch" "$1" || {
-						echo ""
-						echo "****************************************"
-						echo "             FAILED $1"
-						echo "****************************************"
-						echo ""
-						exit 2
-					}
-				done
-			done
-			exit 0
-			;;
-	esac
+        create | update)
+            for dist in $dists; do
+                for arch in $archs; do
+                    echo ""
+                    echo ""
+                    echo "*******************************************************************************"
+                    echo "Doing $1 for distribution $dist arch $arch"
+                    echo "*******************************************************************************"
+                    echo ""
+                    mkdir -p "$HOME/pbuilder/local/$dist"
+                    cowbuilder-dist "$dist" "$arch" "$1" || {
+                        echo ""
+                        echo "****************************************"
+                        echo "             FAILED $1"
+                        echo "****************************************"
+                        echo ""
+                        exit 2
+                    }
+                done
+            done
+            exit 0
+            ;;
+    esac
 fi
 
 for file in $@; do
-	case "$file" in
-		*_source.changes )
-			dist=$(grep '^Distribution: ' -- "$file" | awk '{print $2}')
+    case "$file" in
+        *_source.changes )
+            dist=$(grep '^Distribution: ' -- "$file" | awk '{print $2}')
 
-			if [ -z "$dist" ]; then
-				echo "No distribution found in $file"
-				exit 1
-			fi
+            if [ -z "$dist" ]; then
+                echo "No distribution found in $file"
+                exit 1
+            fi
 
-			file=$(basename -- "$file" _source.changes).dsc
-			if [ ! -r "$file" ]; then
-				echo "File $file does not exists"
-				exit 1
-			fi
+            file=$(basename -- "$file" _source.changes).dsc
+            if [ ! -r "$file" ]; then
+                echo "File $file does not exists"
+                exit 1
+            fi
 
-			tarch=$(grep '^Architecture: ' -- "$file" | cut -d ' ' -f 2-)
-			tarchs="$archs"
-			case "$tarch" in
-				all )
-					tarchs="amd64"
-					;;
-				any )
-					;;
-				* )
-					tarchs="$tarch"
-					;;
-			esac
-			for arch in $tarchs; do
-				echo ""
-				echo ""
-				echo "*******************************************************************************"
-				echo "Building $file for distribution $dist on $arch arch"
-				echo "*******************************************************************************"
-				echo ""
-				mkdir -p "$HOME/pbuilder/local/$dist"
-				cowbuilder-dist "$dist" "$arch" build "$file" || {
-					echo ""
-					echo "****************************************"
-					echo "             FAILED build"
-					echo "****************************************"
-					echo ""
-					exit 2
-				}
-			done
-			;;
+            tarch=$(grep '^Architecture: ' -- "$file" | cut -d ' ' -f 2-)
+            tarchs="$archs"
+            case "$tarch" in
+                all )
+                    tarchs="amd64"
+                    ;;
+                any )
+                    ;;
+                * )
+                    tarchs="$tarch"
+                    ;;
+            esac
+            for arch in $tarchs; do
+                echo ""
+                echo ""
+                echo "*******************************************************************************"
+                echo "Building $file for distribution $dist on $arch arch"
+                echo "*******************************************************************************"
+                echo ""
+                mkdir -p "$HOME/pbuilder/local/$dist"
+                cowbuilder-dist "$dist" "$arch" build "$file" || {
+                    echo ""
+                    echo "****************************************"
+                    echo "             FAILED build"
+                    echo "****************************************"
+                    echo ""
+                    exit 2
+                }
+            done
+            ;;
 
-		* )
-			echo "Unknown file $file"
-			exit 1
-			;;
-	esac
+        * )
+            echo "Unknown file $file"
+            exit 1
+            ;;
+    esac
 done
 
 echo "ok"

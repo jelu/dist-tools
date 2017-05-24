@@ -1,24 +1,24 @@
 #!/bin/sh -e
 
 if [ -z "$1" ]; then
-	echo "usage: $0 <new version> [base]"
-	exit 1
+    echo "usage: $0 <new version> [base]"
+    exit 1
 fi
 
 if [ ! -f debian/changelog -o ! -f debian/control ]; then
-	echo "Not in the right directory, cant find debian files"
-	exit 1
+    echo "Not in the right directory, cant find debian files"
+    exit 1
 fi
 
 darwin=""
 if uname | grep -q -i darwin; then
-	darwin="yes"
+    darwin="yes"
 fi
 
 new_vers="$1"
 base="$2"
 if [ -z "$base" ]; then
-	base="unstable"
+    base="unstable"
 fi
 cur_vers=`head -n 1 debian/changelog | sed 's%.*(\([^)]*\)).*%\1%'`
 name=`head -n 1 debian/changelog | awk '{ print $1 }'`
@@ -35,9 +35,9 @@ cat debian/changelog.new-upstream-release >> debian/changelog
 rm debian/changelog.new-upstream-release
 
 if [ -n "$darwin" ]; then
-	sed -i "" "s%\\(liblim[^ ]*\\) (= $cur_vers)%\\1 (= $new_vers-1~$base+1)%g" debian/control
+    sed -i "" "s%\\(liblim[^ ]*\\) (= $cur_vers)%\\1 (= $new_vers-1~$base+1)%g" debian/control
 else
-	sed -i "s%\\(liblim[^ ]*\\) (= $cur_vers)%\\1 (= $new_vers-1~$base+1)%g" debian/control
+    sed -i "s%\\(liblim[^ ]*\\) (= $cur_vers)%\\1 (= $new_vers-1~$base+1)%g" debian/control
 fi
 
 echo "ok"

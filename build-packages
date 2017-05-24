@@ -1,46 +1,46 @@
 #!/bin/sh -e
 
 if [ -z "$KEY_ID" ]; then
-	KEY_ID="4F23A0260F19DAC5"
+    KEY_ID="4F23A0260F19DAC5"
 fi
 
 release=`lsb_release -c | awk '{print $2}'`
 if [ -z "$release" ]; then
-	echo "could not get release codename, exit"
-	exit 1
+    echo "could not get release codename, exit"
+    exit 1
 fi
 
 id=`lsb_release -i | awk '{print $3}'`
 if [ -z "$id" ]; then
-	echo "could not get distribution id, exit"
-	exit 1
+    echo "could not get distribution id, exit"
+    exit 1
 fi
 
 case "$id" in
-	debian | Debian )
-		releases="jessie stretch sid"
-		id=debian
-		;;
-	ubuntu | Ubuntu )
-		releases="precise trusty xenial yakkety"
-		id=ubuntu
-		;;
-	* )
-		echo "Unknown distribution id $id"
-		exit 1
-		;;
+    debian | Debian )
+        releases="jessie stretch sid"
+        id=debian
+        ;;
+    ubuntu | Ubuntu )
+        releases="precise trusty xenial yakkety"
+        id=ubuntu
+        ;;
+    * )
+        echo "Unknown distribution id $id"
+        exit 1
+        ;;
 esac
 
 if [ "$nosign" = "" ]; then
-	echo "Signing dummy file"
-	rm -f /tmp/dummy.$$*
-	touch /tmp/dummy.$$
-	gpg --default-key $KEY_ID --sign /tmp/dummy.$$
+    echo "Signing dummy file"
+    rm -f /tmp/dummy.$$*
+    touch /tmp/dummy.$$
+    gpg --default-key $KEY_ID --sign /tmp/dummy.$$
 fi
 
 if [ -d .git ]; then
-	rm debian/changelog debian/control
-	git checkout debian/changelog debian/control
+    rm debian/changelog debian/control
+    git checkout debian/changelog debian/control
 fi
 
 if [ -f Makefile.PL ]; then
@@ -50,43 +50,43 @@ fi
 rm -rf .pc
 
 for what in $release; do
-	sed -i "s%~unstable%~$what%g" debian/changelog debian/control
-	sed -i "s%) unstable;%) $what;%g" debian/changelog
-	
-	dpkg-buildpackage -i -I -k$KEY_ID
+    sed -i "s%~unstable%~$what%g" debian/changelog debian/control
+    sed -i "s%) unstable;%) $what;%g" debian/changelog
 
-	if [ -d .git ]; then
-		rm debian/changelog debian/control
-		git checkout debian/changelog debian/control
-	else
-		sed -i "s%~$what%~unstable%g" debian/changelog debian/control
-		sed -i "s%) $what;%) unstable;%g" debian/changelog
-	fi
+    dpkg-buildpackage -i -I -k$KEY_ID
+
+    if [ -d .git ]; then
+        rm debian/changelog debian/control
+        git checkout debian/changelog debian/control
+    else
+        sed -i "s%~$what%~unstable%g" debian/changelog debian/control
+        sed -i "s%) $what;%) unstable;%g" debian/changelog
+    fi
 done
 
 for what in $releases; do
-	sed -i "s%~unstable%~$what%g" debian/changelog debian/control
-	sed -i "s%) unstable;%) $what;%g" debian/changelog
+    sed -i "s%~unstable%~$what%g" debian/changelog debian/control
+    sed -i "s%) unstable;%) $what;%g" debian/changelog
 
-	case "$id" in
-		debian )
-			dpkg-buildpackage -d -i -I -k$KEY_ID
-			;;
-		ubuntu )
-			dpkg-buildpackage -i -I -S -k$KEY_ID
-			;;
-		* )
-			exit 1
-			;;
-	esac
+    case "$id" in
+        debian )
+            dpkg-buildpackage -d -i -I -k$KEY_ID
+            ;;
+        ubuntu )
+            dpkg-buildpackage -i -I -S -k$KEY_ID
+            ;;
+        * )
+            exit 1
+            ;;
+    esac
 
-	if [ -d .git ]; then
-		rm debian/changelog debian/control
-		git checkout debian/changelog debian/control
-	else
-		sed -i "s%~$what%~unstable%g" debian/changelog debian/control
-		sed -i "s%) $what;%) unstable;%g" debian/changelog
-	fi
+    if [ -d .git ]; then
+        rm debian/changelog debian/control
+        git checkout debian/changelog debian/control
+    else
+        sed -i "s%~$what%~unstable%g" debian/changelog debian/control
+        sed -i "s%) $what;%) unstable;%g" debian/changelog
+    fi
 done
 
 echo "ok"
