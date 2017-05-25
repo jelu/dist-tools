@@ -22,7 +22,7 @@ case "$id" in
         id=debian
         ;;
     ubuntu | Ubuntu )
-        releases="precise trusty xenial yakkety"
+        releases="trusty xenial yakkety zesty"
         id=ubuntu
         ;;
     * )
