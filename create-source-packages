@@ -86,7 +86,7 @@ for id in $dists; do
             rpm )
                 if [ -d rpm ]; then
                     spec=`(cd rpm && ls -1 *.spec 2>/dev/null | head -n 1)`
-                    if [ -r "rpm/$spec" ]; then
+                    if [ -f "rpm/$spec" ]; then
                         cur_vers=`grep ^Version: "rpm/$spec" | awk '{print $2}'`
                         name=`grep ^Name: "rpm/$spec" | awk '{print $2}'`
                     fi
@@ -136,7 +136,7 @@ for id in $dists; do
                 dpkg-buildpackage -i -I -S -k$KEY_ID
                 ;;
             rpm )
-                if [ -r "rpm/$spec" ]; then
+                if [ -f "rpm/$spec" ]; then
                     release=`grep ^Release: "rpm/$spec" | awk '{print $2}' | sed 's/%.*//'`
                     cp "rpm/$spec" "../${name}_${cur_vers}-${release}.rpm.spec"
                 fi
