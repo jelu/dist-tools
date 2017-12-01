@@ -18,7 +18,8 @@ if [ "$nosign" = "" ]; then
     echo "Signing dummy file"
     rm -f /tmp/dummy.$$*
     touch /tmp/dummy.$$
-    gpg --default-key $KEY_ID --sign /tmp/dummy.$$
+    gpg --default-key "$KEY_ID" --sign /tmp/dummy.$$
+    rm -f /tmp/dummy.$$*
 fi
 
 if [ -d .git ]; then
@@ -102,7 +103,7 @@ for id in $dists; do
                         ( cd "$path" &&
                             git archive \
                                 --format=tar "--prefix=${name}_${cur_vers}/$path/" \
-                                `git branch | grep '^\*' | sed -e 's%\* %%' | sed -e 's%(detached from \(.*\))%\1%'` \
+                                `git branch | grep '^\*' | sed -e 's%\* %%' | sed -e 's%(detached from \(.*\))%\1%' | sed -e 's%.* detached at \(.*\))%\1%'` \
                             ) \
                             >"../${name}_${cur_vers}.orig.tar-submodule"
                         if [ -f "../${name}_${cur_vers}.orig.tar-submodules" ]; then
@@ -130,10 +131,10 @@ for id in $dists; do
 
         case "$id" in
             debian )
-                dpkg-buildpackage -i -I -S -k$KEY_ID
+                dpkg-buildpackage -d -i -I -S "-k$KEY_ID"
                 ;;
             ubuntu )
-                dpkg-buildpackage -i -I -S -k$KEY_ID
+                dpkg-buildpackage -d -i -I -S "-k$KEY_ID"
                 ;;
             rpm )
                 if [ -f "rpm/$spec" ]; then
