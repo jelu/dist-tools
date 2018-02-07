@@ -1,7 +1,7 @@
 #!/bin/sh -e
 
 if [ -z "$dists" ]; then
-    dists="jessie stretch buster sid"
+    dists="stretch buster sid"
 fi
 
 if [ -z "$archs" ]; then

@@ -44,7 +44,7 @@ fi
 for id in $dists; do
     case "$id" in
         debian | Debian )
-            releases="jessie stretch buster sid"
+            releases="stretch buster sid"
             id=debian
             ;;
         ubuntu | Ubuntu )
