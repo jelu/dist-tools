@@ -13,6 +13,15 @@ fi
 name_vers=`grep -A 1 %changelog "rpm/$spec" | tail -n 1 | cut -d ' ' -f 6-`
 date=`LC_ALL=en_US.UTF-8 date "+%a %b %d %Y"`
 
-sed -i -e "s/%changelog/%changelog\n* $date $name_vers\n- change/" "rpm/$spec"
+if [ -z "$message" ]; then
+  message="change me"
+fi
+
+if [ -n "auto_build_number" ]; then
+  name_vers="$name_vers.$auto_build_number"
+  sed -i -e "s/\(^Release:.*1\)\(%.*\)/\1.$auto_build_number\2/" "rpm/$spec"
+fi
+
+sed -i -e "s/%changelog/%changelog\n* $date $name_vers\n- $message/" "rpm/$spec"
 
 echo "ok"

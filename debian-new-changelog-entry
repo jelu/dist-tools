@@ -9,10 +9,18 @@ cur_vers=`head -n 1 debian/changelog | sed 's%.*(\([^)]*\)).*%\1%'`
 name=`head -n 1 debian/changelog | awk '{ print $1 }'`
 date=`date -R`
 
+if [ -z "$message" ]; then
+  message="change me"
+fi
+
+if [ -n "auto_build_number" ]; then
+  cur_vers=`echo "$cur_vers" | sed -e "s%-1~%-1.$auto_build_number~%"`
+fi
+
 mv debian/changelog debian/changelog.new-entry
 echo "$name ($cur_vers) unstable; urgency=low
 
-  * .
+  * $message
 
  -- Jerry Lundström <lundstrom.jerry@gmail.com>  $date
 " >> debian/changelog

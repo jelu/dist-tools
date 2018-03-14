@@ -1,0 +1,31 @@
+#!/bin/sh -e
+
+base=`dirname $0`
+
+if [ -z "$branch" ]; then
+  branch=lasttag
+fi
+
+for dir in "$@"; do
+  if [ ! -d "$dir" ]; then
+    continue
+  fi
+  echo "create-source-packages in $dir"
+  (
+    cd "$dir"
+    git clean -xfd
+    git submodule status --recursive | while read a d r; do (cd $d && git clean -xfd); done
+    git checkout .
+    git checkout master
+    git fetch --all -pt
+    if [ "$branch" = "lasttag" ]; then
+      git branch -D _lasttag || true
+      git checkout -b _lasttag `git tag | tail -n 1`
+    else
+      git branch -D "$branch" || true
+      git checkout -b "$branch" origin/"$branch"
+    fi
+    git submodule update --init
+    "../$base/create-source-packages" all
+  )
+done
