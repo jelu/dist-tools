@@ -20,8 +20,9 @@ find "$HOME/deb" -type f -name '*_source.changes' |
       cp -v "$HOME/deb/$orig.orig."* "$HOME/build/"
       cp -v "$HOME/deb/$name"* "$HOME/build/" &&
       ( cd "$HOME/build" && "$HOME/dist-tools/cowbuilder-dist" "${name}_source.changes" ) &&
+      mkdir -p "$HOME/deb/result/$name-$vers" &&
       cp -nv "$HOME/pbuilder/"*"_result/"* \
-        "$HOME/deb/result/" &&
+        "$HOME/deb/result/$name-$vers/" &&
       touch "$file.built" ||
       touch "$file.build-err"
       cp -nv "$HOME/pbuilder/${dist}_result/"*.deb \
