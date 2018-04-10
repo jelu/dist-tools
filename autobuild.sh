@@ -24,9 +24,9 @@ find "$debdir" -type f -name '*_source.changes' |
       cp -v "$debdir/$orig.orig."* "$HOME/build/"
       cp -v "$debdir/$name"* "$HOME/build/" &&
       ( cd "$HOME/build" && "$HOME/dist-tools/cowbuilder-dist" "${name}_source.changes" ) &&
-      mkdir -p "$debdir/result/$name-$vers" &&
+      mkdir -p "$debdir/result/$pkg-$vers" &&
       cp -nv "$HOME/pbuilder/"*"_result/"* \
-        "$debdir/result/$name-$vers/" &&
+        "$debdir/result/$pkg-$vers/" &&
       touch "$file.built" ||
       touch "$file.build-err"
       cp -nv "$HOME/pbuilder/${dist}_result/"*.deb \
