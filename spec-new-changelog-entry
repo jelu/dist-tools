@@ -17,7 +17,7 @@ if [ -z "$message" ]; then
   message="change me"
 fi
 
-if [ -n "auto_build_number" ]; then
+if [ -n "$auto_build_number" ]; then
   name_vers="$name_vers.$auto_build_number"
   sed -i -e "s/\(^Release:.*1\)\(%.*\)/\1.$auto_build_number\2/" "rpm/$spec"
 fi

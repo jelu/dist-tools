@@ -13,7 +13,7 @@ if [ -z "$message" ]; then
   message="change me"
 fi
 
-if [ -n "auto_build_number" ]; then
+if [ -n "$auto_build_number" ]; then
   cur_vers=`echo "$cur_vers" | sed -e "s%-1~%-1.$auto_build_number~%"`
 fi
 
