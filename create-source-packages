@@ -48,7 +48,7 @@ for id in $dists; do
             id=debian
             ;;
         ubuntu | Ubuntu )
-            releases="trusty xenial artful bionic"
+            releases="trusty xenial artful bionic cosmic"
             id=ubuntu
             ;;
         rpm )
