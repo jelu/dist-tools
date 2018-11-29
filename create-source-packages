@@ -122,8 +122,10 @@ for id in $dists; do
                 fi
 
                 if [ -f "../${name}_${cur_vers}.orig.tar" ]; then
-                    tar --delete -f "../${name}_${cur_vers}.orig.tar" \
-                        "${name}_${cur_vers}/.gitignore"
+                    if [ -f .gitignore ]; then
+                        tar --delete -f "../${name}_${cur_vers}.orig.tar" \
+                            "${name}_${cur_vers}/.gitignore"
+                    fi
                     ( cd .. && gzip "${name}_${cur_vers}.orig.tar" )
                 fi
             fi
