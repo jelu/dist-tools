@@ -18,8 +18,8 @@ if [ -z "$message" ]; then
 fi
 
 if [ -n "$auto_build_number" ]; then
-  name_vers="$name_vers.$auto_build_number"
-  sed -i -e "s/\(^Release:.*1\)\(%.*\)/\1.$auto_build_number\2/" "rpm/$spec"
+  name_vers=`echo "$name_vers" | sed "s%\(-[0-9]\)%.$auto_build_number\1%"`
+  sed -i -e "s/\(^Version:.*\)/\1.$auto_build_number/" "rpm/$spec"
 fi
 
 sed -i -e "s/%changelog/%changelog\n* $date $name_vers\n- $message/" "rpm/$spec"
