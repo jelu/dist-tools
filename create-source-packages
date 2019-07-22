@@ -1,5 +1,48 @@
 #!/bin/sh -e
 
+dist_tar_src ()
+{
+    local dirname="$1"
+    local hash=
+    local path=
+    local rest=
+
+    if [ ! -f "../${dirname}.orig.tar.gz" ]; then
+        if [ -d .git ]; then
+            git archive --format=tar "--prefix=${dirname}/" `git branch | awk '{print $2}'` \
+                >"../${dirname}.orig.tar"
+            git submodule status --recursive | while read hash path rest; do
+                ( cd "$path" &&
+                    git archive \
+                        --format=tar "--prefix=${dirname}/$path/" \
+                        `git branch | grep '^\*' | sed -e 's%\* %%' | sed -e 's%(detached from \(.*\))%\1%' | sed -e 's%.* detached at \(.*\))%\1%'` \
+                    ) \
+                    >"../${dirname}.orig.tar-submodule"
+                if [ -f "../${dirname}.orig.tar-submodules" ]; then
+                    tar Af "../${dirname}.orig.tar-submodules" "../${dirname}.orig.tar-submodule"
+                    rm "../${dirname}.orig.tar-submodule"
+                else
+                    mv "../${dirname}.orig.tar-submodule" "../${dirname}.orig.tar-submodules"
+                fi
+            done
+            if [ -f "../${dirname}.orig.tar-submodules" ]; then
+                tar Af "../${dirname}.orig.tar" "../${dirname}.orig.tar-submodules"
+                rm "../${dirname}.orig.tar-submodules"
+                tar --delete -f "../${dirname}.orig.tar" \
+                    "${dirname}/.gitmodules"
+            fi
+        fi
+
+        if [ -f "../${dirname}.orig.tar" ]; then
+            if [ -f .gitignore ]; then
+                tar --delete -f "../${dirname}.orig.tar" \
+                    "${dirname}/.gitignore"
+            fi
+            ( cd .. && gzip "${dirname}.orig.tar" )
+        fi
+    fi
+}
+
 if [ -z "$KEY_ID" ]; then
     KEY_ID="4F23A0260F19DAC5"
 fi
@@ -94,54 +137,23 @@ for id in $dists; do
                 fi
                 ;;
         esac
-        if [ -n "$cur_vers" -a -n "$name" ]; then
-            if [ ! -f "../${name}_${cur_vers}.orig.tar.gz" ]; then
-                if [ -d .git ]; then
-                    git archive --format=tar "--prefix=${name}_${cur_vers}/" `git branch | awk '{print $2}'` \
-                        >"../${name}_${cur_vers}.orig.tar"
-                    git submodule status --recursive | while read hash path rest; do
-                        ( cd "$path" &&
-                            git archive \
-                                --format=tar "--prefix=${name}_${cur_vers}/$path/" \
-                                `git branch | grep '^\*' | sed -e 's%\* %%' | sed -e 's%(detached from \(.*\))%\1%' | sed -e 's%.* detached at \(.*\))%\1%'` \
-                            ) \
-                            >"../${name}_${cur_vers}.orig.tar-submodule"
-                        if [ -f "../${name}_${cur_vers}.orig.tar-submodules" ]; then
-                            tar Af "../${name}_${cur_vers}.orig.tar-submodules" "../${name}_${cur_vers}.orig.tar-submodule"
-                            rm "../${name}_${cur_vers}.orig.tar-submodule"
-                        else
-                            mv "../${name}_${cur_vers}.orig.tar-submodule" "../${name}_${cur_vers}.orig.tar-submodules"
-                        fi
-                    done
-                    if [ -f "../${name}_${cur_vers}.orig.tar-submodules" ]; then
-                        tar Af "../${name}_${cur_vers}.orig.tar" "../${name}_${cur_vers}.orig.tar-submodules"
-                        rm "../${name}_${cur_vers}.orig.tar-submodules"
-                        tar --delete -f "../${name}_${cur_vers}.orig.tar" \
-                            "${name}_${cur_vers}/.gitmodules"
-                    fi
-                fi
-
-                if [ -f "../${name}_${cur_vers}.orig.tar" ]; then
-                    if [ -f .gitignore ]; then
-                        tar --delete -f "../${name}_${cur_vers}.orig.tar" \
-                            "${name}_${cur_vers}/.gitignore"
-                    fi
-                    ( cd .. && gzip "${name}_${cur_vers}.orig.tar" )
-                fi
-            fi
-        fi
 
         case "$id" in
             debian )
+                if [ -n "$cur_vers" -a -n "$name" ]; then
+                    dist_tar_src "${name}_${cur_vers}"
+                fi
                 dpkg-buildpackage -d -i -I -S "-k$KEY_ID"
                 ;;
             ubuntu )
+                if [ -n "$cur_vers" -a -n "$name" ]; then
+                    dist_tar_src "${name}_${cur_vers}"
+                fi
                 dpkg-buildpackage -d -i -I -S "-k$KEY_ID"
                 ;;
             rpm )
-                if [ -f "rpm/$spec" ]; then
-                    release=`grep ^Release: "rpm/$spec" | awk '{print $2}' | sed 's/%.*//'`
-                    cp "rpm/$spec" "../${name}_${cur_vers}-${release}.rpm.spec"
+                if [ -n "$cur_vers" -a -n "$name" ]; then
+                    dist_tar_src "${name}-${cur_vers}"
                 fi
                 ;;
             * )
