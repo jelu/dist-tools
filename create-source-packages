@@ -47,12 +47,6 @@ if [ -z "$KEY_ID" ]; then
     KEY_ID="4F23A0260F19DAC5"
 fi
 
-id=`lsb_release -i | awk '{print $3}'`
-if [ -z "$id" ]; then
-    echo "could not get distribution id, exit"
-    exit 1
-fi
-
 # if [ "$1" = "tar" ]; then
 #     nosign="1"
 # fi
@@ -81,6 +75,11 @@ if [ "$1" = "all" ]; then
 elif [ -n "$1" ]; then
     dists="$1"
 else
+    id=`lsb_release -i | awk '{print $3}'`
+    if [ -z "$id" ]; then
+        echo "could not get distribution id, exit"
+        exit 1
+    fi
     dists="$id"
 fi
 
