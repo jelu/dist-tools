@@ -152,7 +152,7 @@ for id in $dists; do
                 ;;
             rpm )
                 if [ -n "$cur_vers" -a -n "$name" ]; then
-                    dist_tar_src "${name}-${cur_vers}"
+                    dist_tar_src "${name}_${cur_vers}"
                 fi
                 ;;
             * )
