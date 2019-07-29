@@ -36,6 +36,7 @@ for debdir in $debdirs; do
             cp -nv "$HOME/pbuilder/${dist}_result/"*.deb \
             "$HOME/pbuilder/local/$dist" &&
             ( cd "$HOME/pbuilder/local/$dist" && apt-ftparchive packages . >Packages )
+            touch "$debdir/result/$pkg-$vers.$dist.done"
         ) >"$debdir/$name.log" 2>&1
     done
 done
