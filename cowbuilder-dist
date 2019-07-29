@@ -49,7 +49,7 @@ EOF
                     echo "*******************************************************************************"
                     echo ""
                     mkdir -p "$HOME/pbuilder/local/$dist"
-                    cowbuilder-dist "$dist" "$arch" "$1" || {
+                    cowbuilder-dist "$dist" "$arch" "$@" || {
                         echo ""
                         echo "****************************************"
                         echo "             FAILED $1"
