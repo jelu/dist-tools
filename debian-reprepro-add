@@ -8,7 +8,7 @@ fi
 base_dir="$1"
 
 if [ -z "$dists" ]; then
-    dists="stretch buster sid"
+    dists="buster bullseye sid"
 fi
 
 for what in $dists; do

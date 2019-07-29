@@ -1,7 +1,7 @@
 #!/bin/sh -e
 
 if [ -z "$dists" ]; then
-    dists="stretch buster sid"
+    dists="buster bullseye sid"
 fi
 
 if [ -z "$archs" ]; then
@@ -36,7 +36,6 @@ EOF
 HOOKDIR="$HOME/pbuilder/hooks"
 BINDMOUNTS="$HOME/pbuilder/local"
 EOF
-            test -f /usr/share/debootstrap/scripts/stretch || ( cd /usr/share/debootstrap/scripts && sudo ln -s sid stretch )
             exit 0
             ;;
 

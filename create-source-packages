@@ -86,11 +86,11 @@ fi
 for id in $dists; do
     case "$id" in
         debian | Debian )
-            releases="stretch buster sid"
+            releases="buster bullseye sid"
             id=debian
             ;;
         ubuntu | Ubuntu )
-            releases="xenial bionic cosmic disco"
+            releases="xenial bionic disco eoan"
             id=ubuntu
             ;;
         rpm )
