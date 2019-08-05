@@ -31,7 +31,9 @@ for debdir in $debdirs; do
             cp -v "$debdir/$orig.orig."* "$HOME/build/"
 
             export OTHERMIRROR="deb [trusted=yes] file://$localdir/$dist ./"
+            mkdir -p "$localdir/$dist"
 
+            ( cd "$localdir/$dist" && apt-ftparchive packages . >Packages ) &&
             cp -v "$debdir/$name"* "$HOME/build/" &&
             ( cd "$HOME/build" && "$HOME/dist-tools/cowbuilder-dist" "${name}_source.changes" ) &&
             mkdir -p "$debdir/result/$pkg-$vers" &&
@@ -41,8 +43,7 @@ for debdir in $debdirs; do
             touch "$file.build-err"
 
             rm -vf "$localdir/$dist/${pkg}_"*
-            cp -nv "$HOME/pbuilder/${dist}_result/"*.deb "$localdir/$dist" &&
-            ( cd "$localdir/$dist" && apt-ftparchive packages . >Packages )
+            cp -nv "$HOME/pbuilder/${dist}_result/"*.deb "$localdir/$dist"
         ) >"$debdir/$name.log" 2>&1
     done
 done

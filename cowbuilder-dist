@@ -15,8 +15,14 @@ fi
 case "$1" in
     install )
         sudo apt-get install -y ubuntu-dev-tools cowbuilder debhelper dput
-        mkdir -p ~/pbuilder/local
+        mkdir -p ~/pbuilder/hooks ~/pbuilder/local
+        cat >~/pbuilder/hooks/D05local <<EOF
+#!/bin/sh -e
+apt-get update
+EOF
+        chmod +x ~/pbuilder/hooks/D05local
         cat >~/.pbuilderrc <<EOF
+HOOKDIR="$HOME/pbuilder/hooks"
 BINDMOUNTS="$HOME/pbuilder/local"
 EOF
         exit 0
