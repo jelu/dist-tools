@@ -17,6 +17,7 @@ for debdir in $debdirs; do
     mkdir -p "$debdir/result" "$HOME/build" "$localdir"
 
     find "$debdir" -type f -name '*_source.changes' | while read file; do
+        test -f "$file" || continue
         test -f "$file.built" && continue
         test -f "$file.build-err" && continue
 
