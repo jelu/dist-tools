@@ -15,24 +15,8 @@ fi
 case "$1" in
     install )
         sudo apt-get install -y ubuntu-dev-tools cowbuilder debhelper dput
-        mkdir -p ~/pbuilder/hooks ~/pbuilder/local
-        cat >~/pbuilder/hooks/D05local <<EOF
-#!/bin/sh -e
-if [ -f "$HOME/pbuilder/local/\$DIST/Packages" ]; then
-  echo "deb [trusted=yes] file:///$HOME/pbuilder/local/\$DIST ./" | tee /etc/apt/sources.list.d/local.list
-  apt-get update -o Dir::Etc::sourcelist="sources.list.d/local.list" -o Dir::Etc::sourceparts="-" -o APT::Get::List-Cleanup="0"
-fi
-EOF
-        chmod +x ~/pbuilder/hooks/D05local
-        cat >~/pbuilder/local/update <<EOF
-#!/bin/sh -e
-for dist in $dists; do
-  (cd \$dist && apt-ftparchive packages . >Packages)
-done
-EOF
-        chmod +x ~/pbuilder/local/update
+        mkdir -p ~/pbuilder/local
         cat >~/.pbuilderrc <<EOF
-HOOKDIR="$HOME/pbuilder/hooks"
 BINDMOUNTS="$HOME/pbuilder/local"
 EOF
         exit 0
@@ -47,7 +31,6 @@ EOF
                 echo "Doing $1 for distribution $dist arch $arch"
                 echo "*******************************************************************************"
                 echo ""
-                mkdir -p "$HOME/pbuilder/local/$dist"
                 cowbuilder-dist "$dist" "$arch" "$@" || {
                     echo ""
                     echo "****************************************"
@@ -97,7 +80,6 @@ for file in $@; do
                 echo "Building $file for distribution $dist on $arch arch"
                 echo "*******************************************************************************"
                 echo ""
-                mkdir -p "$HOME/pbuilder/local/$dist"
                 cowbuilder-dist "$dist" "$arch" build "$file" || {
                     echo ""
                     echo "****************************************"

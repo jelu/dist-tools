@@ -6,12 +6,15 @@ fi
 if [ -z "$debdirs" ]; then
     debdirs="$debdir"
 fi
+if [ -z "$localdir" ]; then
+    localdir="$HOME/pbuilder/local"
+fi
 
 test -f "$HOME/autobuild.pid" && exit 0
 echo $$ >"$HOME/autobuild.pid" 2>/dev/null || exit 0
 
 for debdir in $debdirs; do
-    mkdir -p "$debdir/result" "$HOME/build"
+    mkdir -p "$debdir/result" "$HOME/build" "$localdir"
 
     find "$debdir" -type f -name '*_source.changes' | while read file; do
         test -f "$file.built" && continue
@@ -26,17 +29,20 @@ for debdir in $debdirs; do
             rm -vf "$HOME/build/"*
             rm -vf "$HOME/pbuilder/"*"_result/"*
             cp -v "$debdir/$orig.orig."* "$HOME/build/"
+
+            export OTHERMIRROR="deb [trusted=yes] file://$localdir/$dist ./"
+
             cp -v "$debdir/$name"* "$HOME/build/" &&
             ( cd "$HOME/build" && "$HOME/dist-tools/cowbuilder-dist" "${name}_source.changes" ) &&
             mkdir -p "$debdir/result/$pkg-$vers" &&
-            cp -nv "$HOME/pbuilder/"*"_result/"* \
-            "$debdir/result/$pkg-$vers/" &&
-            touch "$file.built" ||
+            cp -nv "$HOME/pbuilder/"*"_result/"* "$debdir/result/$pkg-$vers/" &&
+            touch "$file.built" &&
+            touch "$debdir/result/$pkg-$vers.$dist.done" ||
             touch "$file.build-err"
-            cp -nv "$HOME/pbuilder/${dist}_result/"*.deb \
-            "$HOME/pbuilder/local/$dist" &&
-            ( cd "$HOME/pbuilder/local/$dist" && apt-ftparchive packages . >Packages )
-            touch "$debdir/result/$pkg-$vers.$dist.done"
+
+            rm -vf "$localdir/$dist/${pkg}_"*
+            cp -nv "$HOME/pbuilder/${dist}_result/"*.deb "$localdir/$dist" &&
+            ( cd "$localdir/$dist" && apt-ftparchive packages . >Packages )
         ) >"$debdir/$name.log" 2>&1
     done
 done
