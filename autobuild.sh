@@ -47,8 +47,10 @@ EOF
             touch "$debdir/result/$pkg-$vers.$dist.done" ||
             touch "$file.build-err"
 
-            rm -vf "$localdir/$dist/${pkg}_"*
-            cp -nv "$HOME/pbuilder/${dist}_result/"*.deb "$localdir/$dist"
+            ls -1 "$HOME/pbuilder/"*"_result/"*.deb 2>/dev/null | sed 's%.*/%%'| sed 's%_.*%%'| sort | uniq | while read deb; do
+                rm -vf "$localdir/$dist/${deb}_"*
+            done
+            cp -nv "$HOME/pbuilder/"*"_result/"*.deb "$localdir/$dist"
         ) >"$debdir/$name.log" 2>&1
     done
 done
