@@ -7,15 +7,16 @@ dist_tar_src ()
     local path=
     local rest=
 
-    if [ ! -f "../${dirname}.orig.tar.gz" ]; then
+    if [ ! -f "../${dirname}.orig.tar.gz" -o "$overwrite" = "yes" ]; then
         if [ -d .git ]; then
-            git archive --format=tar "--prefix=${dirname}/" `git branch | awk '{print $2}'` \
+            cur_branch=`git branch | grep '^\*' | sed -e 's%\* %%' | sed -e 's%(detached from \(.*\))%\1%' | sed -e 's%.* detached at \(.*\))%\1%'`
+            git archive --format=tar "--prefix=${dirname}/" "$cur_branch" \
                 >"../${dirname}.orig.tar"
             git submodule status --recursive | while read hash path rest; do
                 ( cd "$path" &&
                     git archive \
                         --format=tar "--prefix=${dirname}/$path/" \
-                        `git branch | grep '^\*' | sed -e 's%\* %%' | sed -e 's%(detached from \(.*\))%\1%' | sed -e 's%.* detached at \(.*\))%\1%'` \
+                        "$cur_branch" \
                     ) \
                     >"../${dirname}.orig.tar-submodule"
                 if [ -f "../${dirname}.orig.tar-submodules" ]; then
@@ -38,7 +39,7 @@ dist_tar_src ()
                 tar --delete -f "../${dirname}.orig.tar" \
                     "${dirname}/.gitignore"
             fi
-            ( cd .. && gzip "${dirname}.orig.tar" )
+            ( cd .. && gzip -f "${dirname}.orig.tar" )
         fi
     fi
 }
