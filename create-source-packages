@@ -9,14 +9,13 @@ dist_tar_src ()
 
     if [ ! -f "../${dirname}.orig.tar.gz" -o "$overwrite" = "yes" ]; then
         if [ -d .git ]; then
-            cur_branch=`git branch | grep '^\*' | sed -e 's%\* %%' | sed -e 's%(detached from \(.*\))%\1%' | sed -e 's%.* detached at \(.*\))%\1%'`
-            git archive --format=tar "--prefix=${dirname}/" "$cur_branch" \
+            git archive --format=tar "--prefix=${dirname}/" `git branch | grep '^\*' | sed -e 's%\* %%' | sed -e 's%(detached from \(.*\))%\1%' | sed -e 's%.* detached at \(.*\))%\1%'` \
                 >"../${dirname}.orig.tar"
             git submodule status --recursive | while read hash path rest; do
                 ( cd "$path" &&
                     git archive \
                         --format=tar "--prefix=${dirname}/$path/" \
-                        "$cur_branch" \
+                        `git branch | grep '^\*' | sed -e 's%\* %%' | sed -e 's%(detached from \(.*\))%\1%' | sed -e 's%.* detached at \(.*\))%\1%'` \
                     ) \
                     >"../${dirname}.orig.tar-submodule"
                 if [ -f "../${dirname}.orig.tar-submodules" ]; then
