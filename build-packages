@@ -22,7 +22,7 @@ case "$id" in
         id=debian
         ;;
     ubuntu | Ubuntu )
-        releases="xenial bionic disco eoan"
+        releases="xenial bionic focal"
         id=ubuntu
         ;;
     * )
