@@ -18,11 +18,11 @@ fi
 
 case "$id" in
     debian | Debian )
-        releases="buster bullseye sid"
+        releases="bullseye bookworm sid"
         id=debian
         ;;
     ubuntu | Ubuntu )
-        releases="xenial bionic focal"
+        releases="bionic focal hirsute"
         id=ubuntu
         ;;
     * )

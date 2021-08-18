@@ -1,7 +1,7 @@
 #!/bin/sh -e
 
 if [ -z "$dists" ]; then
-    dists="buster bullseye sid"
+    dists="bullseye bookworm sid"
 fi
 
 if [ -z "$archs" ]; then
