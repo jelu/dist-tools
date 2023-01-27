@@ -33,7 +33,7 @@ for debdir in $debdirs; do
 
             cat >~/pbuilder/hooks/D05local <<EOF
 #!/bin/sh -e
-echo "deb [trusted=yes] file:///$localdir/$dist ./" | tee /etc/apt/sources.list.d/local.list
+echo "deb [trusted=yes] file:$localdir/$dist ./" | tee /etc/apt/sources.list.d/local.list
 apt-get update -o Dir::Etc::sourcelist="sources.list.d/local.list" -o Dir::Etc::sourceparts="-" -o APT::Get::List-Cleanup="0"
 EOF
             chmod +x ~/pbuilder/hooks/D05local
