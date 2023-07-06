@@ -89,7 +89,7 @@ fi
 for id in $dists; do
     case "$id" in
         debian | Debian )
-            releases="bullseye bookworm sid"
+            releases="bookworm trixie sid"
             id=debian
             ;;
         ubuntu | Ubuntu )
