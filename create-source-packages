@@ -93,7 +93,7 @@ for id in $dists; do
             id=debian
             ;;
         ubuntu | Ubuntu )
-            releases="bionic focal jammy"
+            releases="focal jammy noble"
             id=ubuntu
             ;;
         rpm )
