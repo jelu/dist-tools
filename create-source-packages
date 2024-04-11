@@ -89,19 +89,19 @@ fi
 for id in $dists; do
     case "$id" in
         debian | Debian )
-            if [ -z "$releases" ];
+            if [ -z "$releases" ]; then
                 releases="bookworm trixie sid"
             fi
             id=debian
             ;;
         ubuntu | Ubuntu )
-            if [ -z "$releases" ];
+            if [ -z "$releases" ]; then
                 releases="focal jammy noble"
             fi
             id=ubuntu
             ;;
         rpm )
-            if [ -z "$releases" ];
+            if [ -z "$releases" ]; then
                 releases="all"
             fi
             ;;
