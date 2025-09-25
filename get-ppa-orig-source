@@ -1,0 +1,35 @@
+#!/bin/sh -e
+
+team="$1"
+archive="$2"
+if [ -z "$releases" ]; then
+    releases="focal jammy noble"
+fi
+if [ -z "$destdir" ]; then
+    destdir=".."
+fi
+
+if [ -z "$team" -o -z "$archive" ]; then
+    echo "usage: get-ppa-orig-source <~team> <archive>"
+    exit 1
+fi
+
+package=`dpkg-parsechangelog --show-field Source`
+version=`dpkg-parsechangelog --show-field Version`
+orig_version=`echo "$version" | sed 's%-.*%%'`
+orig_source="${package}_$orig_version.orig.tar.gz"
+
+echo "getting $orig_source from $team/$archive"
+
+for release in $releases; do
+    echo "trying release $release"
+
+    rel_version=`echo "$version" | sed "s%~unstable%~$release%g"`
+
+    if wget -q -O "$destdir/$orig_source" "https://launchpad.net/$team/+archive/ubuntu/$archive/+sourcefiles/$package/$rel_version/$orig_source"; then
+        echo "found"
+        break
+    fi
+done
+
+echo "ok"
