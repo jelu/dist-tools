@@ -3,7 +3,7 @@
 team="$1"
 archive="$2"
 if [ -z "$releases" ]; then
-    releases="focal jammy noble"
+    releases="focal jammy noble plucky questing"
 fi
 if [ -z "$destdir" ]; then
     destdir=".."
