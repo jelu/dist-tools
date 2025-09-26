@@ -32,6 +32,7 @@ if [ ! -f "$destdir/$orig_source" -o "$overwrite" = "yes" ]; then
             break
         else
             echo "not found"
+            rm -f "$destdir/$orig_source"
         fi
     done
 else
