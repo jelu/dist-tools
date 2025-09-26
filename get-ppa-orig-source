@@ -19,7 +19,7 @@ version=`dpkg-parsechangelog --show-field Version`
 orig_version=`echo "$version" | sed 's%-.*%%'`
 orig_source="${package}_$orig_version.orig.tar.gz"
 
-if [ ! -f "../${dirname}.orig.tar.gz" -o "$overwrite" = "yes" ]; then
+if [ ! -f "$destdir/$orig_source" -o "$overwrite" = "yes" ]; then
     echo "getting $orig_source from $team/$archive"
 
     for release in $releases; do
