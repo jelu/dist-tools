@@ -19,17 +19,23 @@ version=`dpkg-parsechangelog --show-field Version`
 orig_version=`echo "$version" | sed 's%-.*%%'`
 orig_source="${package}_$orig_version.orig.tar.gz"
 
-echo "getting $orig_source from $team/$archive"
+if [ ! -f "../${dirname}.orig.tar.gz" -o "$overwrite" = "yes" ]; then
+    echo "getting $orig_source from $team/$archive"
 
-for release in $releases; do
-    echo "trying release $release"
+    for release in $releases; do
+        echo -n "trying release $release... "
 
-    rel_version=`echo "$version" | sed "s%~unstable%~$release%g"`
+        rel_version=`echo "$version" | sed "s%~unstable%~$release%g"`
 
-    if wget -q -O "$destdir/$orig_source" "https://launchpad.net/$team/+archive/ubuntu/$archive/+sourcefiles/$package/$rel_version/$orig_source"; then
-        echo "found"
-        break
-    fi
-done
+        if wget -q -O "$destdir/$orig_source" "https://launchpad.net/$team/+archive/ubuntu/$archive/+sourcefiles/$package/$rel_version/$orig_source"; then
+            echo "found"
+            break
+        else
+            echo "not found"
+        fi
+    done
+else
+    echo "$orig_source already exists"
+fi
 
 echo "ok"
