@@ -41,6 +41,14 @@ dist_tar_src ()
                 tar --delete -f "../${dirname}.orig.tar" \
                     "${dirname}/.gitignore"
             fi
+            if [ -d .forgejo ]; then
+                tar --delete -f "../${dirname}.orig.tar" \
+                    "${dirname}/.forgejo"
+            fi
+            if [ -d .builds ]; then
+                tar --delete -f "../${dirname}.orig.tar" \
+                    "${dirname}/.builds"
+            fi
             ( cd .. && gzip -f "${dirname}.orig.tar" )
         fi
     fi
