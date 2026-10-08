@@ -104,7 +104,7 @@ for id in $dists; do
             ;;
         ubuntu | Ubuntu )
             if [ -z "$releases" ]; then
-                releases="jammy noble questing resolute"
+                releases="jammy noble resolute"
             fi
             id=ubuntu
             ;;
