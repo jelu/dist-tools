@@ -159,13 +159,19 @@ for id in $dists; do
                 if [ -n "$cur_vers" -a -n "$name" ]; then
                     dist_tar_src "${name}_${cur_vers}"
                 fi
-                dpkg-buildpackage -d -i -I -S "-k$KEY_ID"
+                dpkg-buildpackage -d -i -I \
+                  --source-option="--extend-diff-ignore=\\.builds" \
+                  --source-option="--extend-diff-ignore=\\.forgejo" \
+                  -S "-k$KEY_ID"
                 ;;
             ubuntu )
                 if [ -n "$cur_vers" -a -n "$name" ]; then
                     dist_tar_src "${name}_${cur_vers}"
                 fi
-                dpkg-buildpackage -d -i -I -S "-k$KEY_ID"
+                dpkg-buildpackage -d -i -I \
+                  --source-option="--extend-diff-ignore=\\.builds" \
+                  --source-option="--extend-diff-ignore=\\.forgejo" \
+                  -S "-k$KEY_ID"
                 ;;
             rpm )
                 if [ -n "$cur_vers" -a -n "$name" ]; then
